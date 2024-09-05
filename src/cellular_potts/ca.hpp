@@ -430,6 +430,10 @@ public:
     Measure cell sizes of all initial size and assign them to the cells
   */
   void MeasureCellSizes(void);
+  
+  /* Find the membrane pixels
+  */
+  std::vector<PixelPos> GetCellMembranePixels();
 
   /*! \brief Measure the initial cell perimeters
     Measure cell perimeters of all initial size and assign them to the cells
@@ -467,6 +471,14 @@ public:
     }
   };
   void CalcPeriodicSafeCentroids(void);
+
+  /// @brief Fixes the coordinate CoordP with respect to periodic boundaries
+  //  if there is one.
+  // #TODO: This code can be further generalized for periodicity in only x, y or z directions.
+  /// @param CoordP x, y (or z) Coordinate of the pixel  
+  /// @param SizeCoord size of the box in x, y (or z) direction.
+  /// @return Fixed coordinate with respect to the periodic boundaries.
+  int FixPeriodic(int CoordP, int SizeCoord);
 
 private:
   /*! \brief Standard deltaH with are constraint, length constraint and

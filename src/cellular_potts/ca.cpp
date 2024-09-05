@@ -273,6 +273,16 @@ double sat(double x) {
   // return x;
 }
 
+int CellularPotts::FixPeriodic(int CoordP,int SizeCoord){
+  if (par.periodic_boundaries) {
+    if (CoordP <= 0)
+      CoordP = SizeCoord - 2 + CoordP;
+    if (CoordP >= SizeCoord - 1)
+      CoordP = CoordP - SizeCoord + 2;
+  }
+  return CoordP;
+}
+
 int CellularPotts::IsingDeltaH(int x, int y, PDE *PDEfield) {
   int DH = 0, H_before = 0, H_after = 0;
   int i, sxy;
@@ -1939,6 +1949,33 @@ void CellularPotts::MeasureCellSize(Cell &c) {
       }
     }
   }
+}
+
+std::vector<PixelPos> CellularPotts::GetCellMembranePixels() {
+  std::vector<PixelPos> pixels;
+  for (int x = 1; x < sizex - 1; x++) {
+    for (int y = 1; y < sizey - 1; y++) {
+      if (sigma[x][y] > 0) {
+        for (int i = 1; i <= n_nb; i++) {
+          int xp2, yp2;
+          xp2 = x + nx[i];
+          yp2 = y + ny[i];
+
+          xp2 = FixPeriodic(xp2,sizex);
+          yp2 = FixPeriodic(yp2,sizey);
+
+          // did we find a border?
+          if (sigma[xp2][yp2] != sigma[x][y]) {
+            // add to the perimeter of the cell
+            PixelPos pixel(x, y);
+            pixels.push_back(pixel);
+            break; // to avoid double conunting
+          }
+        }
+      }
+    }
+  }
+  return pixels;
 }
 
 void CellularPotts::MeasureCellPerimeters() {
