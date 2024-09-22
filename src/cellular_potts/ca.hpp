@@ -46,6 +46,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 #include "cell.hpp"
 #include "cell_ecm_interactions.hpp"
 #include "pde.hpp"
+#include "act.hpp"
 
 using namespace std;
 
@@ -118,6 +119,9 @@ public:
   std::unordered_set<std::array<int, 2>> alivePixels;
   std::unordered_map<std::array<int, 2>, int> actPixels;
   int **matrix;
+
+  /* Adding an instance of the ActField class to the CellularPotts class */
+  ACT::ActField act_field;
 
   //! \brief Constructs a CA field. This should be done in "Dish".
   CellularPotts(std::vector<Cell> *cells, const int sizex = 200,

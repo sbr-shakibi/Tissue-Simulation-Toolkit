@@ -41,6 +41,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 #include "random.hpp"
 #include "sqr.hpp"
 #include "sticky.hpp"
+#include "act.hpp"
 
 #define ZYGFILE(Z) <Z.xpm>
 #define XPM(Z) Z##_xpm
@@ -549,6 +550,12 @@ int CellularPotts::DeltaH(int x, int y, int xp, int yp, PDE *PDEfield,
                                         sat(PDEfield->get_PDEvars(0, xp, yp))));
       DH -= DDH;
     }
+  }
+
+  /* ACT model */
+  if (par.lambda_Act && par.max_Act) {
+    auto dh_act = ACT::DeltaH(act_field, sigma, {xp,yp}, {x,y}, par.lambda_Act, par.max_Act); 
+    DH -=  dh_act;
   }
 
   /* Individual adhesions with ECM */
@@ -1082,6 +1089,7 @@ int CellularPotts::AmoebaeMove(PDE *PDEfield, bool anneal) {
     if ((p = CopyvProb(D_H, H_diss, anneal)) > 0) {
       if (par.adhesions_enabled)
         adhesion_mover.commit_move({xp, yp}, {x, y}, adh_disp);
+        ACT::commit_move(act_field,sigma,{xp, yp}, {x, y});
       ConvertSpin(x, y, xp,
                   yp); // sigma(x,y) will get the same value as sigma(xp,yp)
       for (int j = 1; j <= n_nb; j++) {
@@ -1122,6 +1130,7 @@ int CellularPotts::AmoebaeMove(PDE *PDEfield, bool anneal) {
       SumDH += D_H;
     }
   }
+  act_field.Decrease();
   return SumDH;
 }
 
