@@ -22,7 +22,7 @@ _logger = logging.getLogger(__name__)
 
 
 class StatePlotter:
-    """Plots the simulation state on the screen or to a PNG."""
+    """Plots the simulation state on the screen or to a file."""
     def __init__(self, Lx: float, Ly: float, img_height: int = 480) -> None:
         """Create a Viewer
 
@@ -68,8 +68,8 @@ class StatePlotter:
             par_type: npt.NDArray[np.int32], bond_groups: npt.NDArray[np.int32],
             pde: npt.NDArray[np.float64], 
             cpm: npt.NDArray[np.int32],
-            draw: bool = True, save: bool = True, out_dir: Optional[Path] = None
-            ) -> None:
+            draw: bool = True, save: bool = True, out_dir: Optional[Path] = None,
+            output_format: str = 'png') -> None:
         """Update the diagram with new data
 
         Args:
@@ -81,6 +81,7 @@ class StatePlotter:
             draw: Whether to draw to a window on the screen
             save: Whether to save to file in out_dir
             out_dir: Where to write output, if any
+            output_format: Format of the output file
         """
         
         self._draw_ecm(par_pos, par_type, bond_groups)
@@ -90,8 +91,8 @@ class StatePlotter:
         if save:
             if out_dir is None:
                 raise RuntimeError('Trying to save image, but no out_dir specified')
-            file_name = str(out_dir / f'state_{i:05d}.png')
-            self._fig.savefig(file_name, format='png', dpi=self._dpi)
+            file_name = str(out_dir / f'state_{i:05d}.{output_format}')
+            self._fig.savefig(file_name, format=output_format, dpi=self._dpi)
 
         if draw:
             plt.draw()
