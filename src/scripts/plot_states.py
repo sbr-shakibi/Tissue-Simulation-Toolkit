@@ -76,6 +76,7 @@ def main() -> None:
                 data['ecm_state']['bonds']['groups'].array,
                 data['cpm_state']['pde'].array,
                 data['cpm_state']['cpm'].array,
+                data['cpm_state']['act_field'].array,
                 draw=False, save=True, out_dir=data_dir,
                 output_format=FMT)
 

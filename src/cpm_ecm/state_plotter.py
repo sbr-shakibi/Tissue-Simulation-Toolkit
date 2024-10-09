@@ -60,6 +60,7 @@ class StatePlotter:
         self._cpm_contours: Optional[QuadContourSet] = None
         self._cpm_contour_fill: Optional[QuadContourSet] = None
         self._pde_image: Optional[AxesImage] = None
+        self._act_image: Optional[AxesImage] = None
 
         plt.ioff()
 
@@ -67,7 +68,7 @@ class StatePlotter:
             self, i: int, par_pos: npt.NDArray[np.float64],
             par_type: npt.NDArray[np.int32], bond_groups: npt.NDArray[np.int32],
             pde: npt.NDArray[np.float64], 
-            cpm: npt.NDArray[np.int32],
+            cpm: npt.NDArray[np.int32], actfield: npt.NDArray[np.float64], 
             draw: bool = True, save: bool = True, out_dir: Optional[Path] = None,
             output_format: str = 'png') -> None:
         """Update the diagram with new data
@@ -78,6 +79,7 @@ class StatePlotter:
             bond_groups: Ids of bonded particles, Mx2 array
             pde: Concentrations, L x SizeX x SizeY array
             cpm: Cellular Potts state, SizeX x SizeY array
+            actfield: Act level, SizeX x SizeY array
             draw: Whether to draw to a window on the screen
             save: Whether to save to file in out_dir
             out_dir: Where to write output, if any
@@ -87,6 +89,7 @@ class StatePlotter:
         self._draw_ecm(par_pos, par_type, bond_groups)
         self._draw_pde(pde)
         self._draw_cpm(cpm)
+        self._draw_act(actfield)
 
         if save:
             if out_dir is None:
@@ -139,6 +142,18 @@ class StatePlotter:
 
         self._pde_image = plt.imshow(
                 pde[0], origin = 'upper', cmap = matplotlib.colormaps['hot_r'])
+
+    def _draw_act(self, actfield: npt.NDArray[np.float64]) -> None:
+        """Update the ACT part of the diagram
+
+        Args:
+            actfield: Act level, SizeX x SizeY array
+        """
+        if self._act_image:
+            self._act_image.remove()
+
+        self._act_image = plt.imshow(
+                actfield, origin = 'upper', cmap = matplotlib.colormaps['hot_r'],vmin=0,vmax=500)
 
     def _draw_cpm(self, cpm: npt.NDArray[np.int32]) -> None:
         """Update the CPM state part of the diagram

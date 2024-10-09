@@ -171,7 +171,13 @@ TIMESTEP {
                         static_cast<std::size_t>(pde->SizeX()),
                         static_cast<std::size_t>(pde->SizeY())},
                        {"layer", "x", "y"}, StorageOrder::first_adjacent);
-        Data state = Data::dict("cpm", cpm_state, "pde", pde_state);
+        std::int32_t *act_field = dish->CPM->getActField()[0];
+        Data act_state =
+            Data::grid(act_field,
+                       {static_cast<std::size_t>(dish->CPM->SizeX()),
+                        static_cast<std::size_t>(dish->CPM->SizeY())},
+                       {"x", "y"}, StorageOrder::last_adjacent);
+        Data state = Data::dict("cpm", cpm_state, "pde", pde_state,"act_field",act_state);
         instance->send("state_out", Message(i, state));
       }
     }
