@@ -44,6 +44,7 @@ def main() -> None:
                 ecm_state_msg = instance.receive('ecm_state_in')
 
                 particles = ecm_state_msg.data['particles']
+                print(type(cpm_state_msg.data['cpm']))
 
                 plotter.draw(
                         i,
@@ -51,7 +52,9 @@ def main() -> None:
                         particles['types'].array,
                         ecm_state_msg.data['bonds']['groups'].array,
                         cpm_state_msg.data['pde'].array,
-                        cpm_state_msg.data['cpm'].array, save=False)
+                        cpm_state_msg.data['cpm'].array,
+                        cpm_state_msg.data['act_field'],
+                        save=False)
 
 if __name__ == '__main__':
     main()
