@@ -369,7 +369,10 @@ class Network:
         _logger.info('')
 
         # Created crosslinks may be fewer than requested, e.g. due to low strand density
-        _logger.info(f"Number of crosslinks requested: {len(sampled_bins)}")
+        try:
+            _logger.info(f"Number of crosslinks requested: {len(sampled_bins)}")
+        except UnboundLocalError:
+            _logger.info(f"Number of crosslinks requested: 0")
         _logger.info(f"Number of crosslinks created: {len(self.crosslink_list)}")
         
         self.bonds_group.extend(self.crosslink_list)
