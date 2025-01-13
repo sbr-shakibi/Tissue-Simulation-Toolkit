@@ -540,6 +540,9 @@ int CellularPotts::DeltaH(int x, int y, int xp, int yp, PDE *PDEfield,
         (2. + 2. * (double)((*cell)[sxyp].Area() - (*cell)[sxyp].TargetArea() -
                             (*cell)[sxy].Area() + (*cell)[sxy].TargetArea()))));
 
+  /* Perimeter Hamiltonian */
+  DH += Perimeter_DeltaH(x,y,xp,yp);
+
   /* Chemotaxis */
   if (PDEfield && (par.vecadherinknockout || (sxyp == 0 || sxy == 0))) {
     // copying from (xp, yp) into (x,y)
@@ -593,6 +596,69 @@ int CellularPotts::DeltaH(int x, int y, int xp, int yp, PDE *PDEfield,
                        (*cell)[sxy].TargetLength()))));
   }
   return DH;
+}
+
+int CellularPotts::Perimeter_DeltaH(int x,int y,int xp, int yp){
+  int sxy = sigma[x][y];
+  int sxyp = sigma[xp][yp];
+  int tau_source = (*cell)[sigma[xp][yp]].tau;
+  int tau_target = (*cell)[sigma[x][y]].tau;
+  int DH_perimeter=0;
+
+  if (sxyp == MEDIUM) {
+    DH_perimeter -=
+        par.lambda_perimeter *
+        (DSQR((*cell)[sxy].Perimeter() - (*cell)[sxy].TargetPerimeter()) -
+        DSQR(GetNewPerimeterIfXYWereRemoved(sxy, x, y) -
+              (*cell)[sxy].TargetPerimeter()));
+
+  } else if (sxy == MEDIUM) {
+
+    DH_perimeter -=
+        par.lambda_perimeter *
+        (DSQR((*cell)[sxyp].Perimeter() - (*cell)[sxyp].TargetPerimeter()) -
+        DSQR(GetNewPerimeterIfXYWereAdded(sxyp, x, y) -
+              (*cell)[sxyp].TargetPerimeter()));
+
+  }
+  // they're both cells
+  else {
+
+    DH_perimeter -=
+        par.lambda_perimeter *
+        ((DSQR((*cell)[sxyp].Perimeter() - (*cell)[sxyp].TargetPerimeter()) -
+          DSQR(GetNewPerimeterIfXYWereAdded(sxyp, x, y) -
+              (*cell)[sxyp].TargetPerimeter())));
+
+    DH_perimeter -=
+        par.lambda_perimeter *
+        (DSQR((*cell)[sxy].Perimeter() - (*cell)[sxy].TargetPerimeter()) -
+        DSQR(GetNewPerimeterIfXYWereRemoved(sxy, x, y) -
+              (*cell)[sxy].TargetPerimeter()));
+  }
+  return DH_perimeter;
+}
+
+int CellularPotts::Area_DeltaH(int x,int y,int xp, int yp){
+  int sxy = sigma[x][y];
+  int sxyp = sigma[xp][yp];
+  int tau_source = (*cell)[sigma[xp][yp]].tau;
+  int tau_target = (*cell)[sigma[x][y]].tau;
+  int DH_area=0;
+
+  if (sxyp == MEDIUM) {
+    DH_area += (int)(par.lambda * (1. - 2. * (double)((*cell)[sxy].Area() -
+                                                (*cell)[sxy].TargetArea())));
+  } else if (sxy == MEDIUM) {
+    DH_area +=
+        (int)((par.lambda * (1. + 2. * (double)((*cell)[sxyp].Area() -
+                                                (*cell)[sxyp].TargetArea()))));
+  } else
+    DH_area += (int)((
+        par.lambda *
+        (2. + 2. * (double)((*cell)[sxyp].Area() - (*cell)[sxyp].TargetArea() -
+                            (*cell)[sxy].Area() + (*cell)[sxy].TargetArea()))));
+  return DH_area;
 }
 
 int CellularPotts::Act_AmoebaeMove(PDE *PDEfield) {
@@ -783,42 +849,10 @@ int CellularPotts::Act_DeltaH(int x, int y, int xp, int yp, PDE *PDEfield) {
   //! Perimeter constraint, only available when par.area_constraint_type==0, in
   //! other words,
   // when the target area constraint is in place
-  int DH_perimeter = 0;
-  if (par.area_constraint_type == 0) {
-    if (sxyp == MEDIUM) {
 
-      DH_perimeter -=
-          par.lambda_perimeter *
-          (DSQR((*cell)[sxy].Perimeter() - (*cell)[sxy].TargetPerimeter()) -
-           DSQR(GetNewPerimeterIfXYWereRemoved(sxy, x, y) -
-                (*cell)[sxy].TargetPerimeter()));
+  /* Perimeter Hamiltonian */
+  DH += Perimeter_DeltaH(x,y,xp,yp);
 
-    } else if (sxy == MEDIUM) {
-
-      DH_perimeter -=
-          par.lambda_perimeter *
-          (DSQR((*cell)[sxyp].Perimeter() - (*cell)[sxyp].TargetPerimeter()) -
-           DSQR(GetNewPerimeterIfXYWereAdded(sxyp, x, y) -
-                (*cell)[sxyp].TargetPerimeter()));
-
-    }
-    // they're both cells
-    else {
-
-      DH_perimeter -=
-          par.lambda_perimeter *
-          ((DSQR((*cell)[sxyp].Perimeter() - (*cell)[sxyp].TargetPerimeter()) -
-            DSQR(GetNewPerimeterIfXYWereAdded(sxyp, x, y) -
-                 (*cell)[sxyp].TargetPerimeter())));
-
-      DH_perimeter -=
-          par.lambda_perimeter *
-          (DSQR((*cell)[sxy].Perimeter() - (*cell)[sxy].TargetPerimeter()) -
-           DSQR(GetNewPerimeterIfXYWereRemoved(sxy, x, y) -
-                (*cell)[sxy].TargetPerimeter()));
-    }
-  }
-  DH += DH_perimeter;
   /* Chemotaxis */
   int DDH = 0;
   if (PDEfield && (par.vecadherinknockout || (sxyp == 0 || sxy == 0))) {

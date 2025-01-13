@@ -498,6 +498,14 @@ private:
   int DeltaH(int x, int y, int xp, int yp, PDE *PDEfield,
              AdhesionDisplacements *adh_disp);
 
+  /*! \brief DeltaH, for harmonic potential for cell area
+   */
+  int Area_DeltaH(int x,int y,int xp, int yp);
+
+  /*! \brief DeltaH, for harmonic potential for cell perimeter
+   */
+  int Perimeter_DeltaH(int x,int y,int xp, int yp);
+
   /*! \brief DeltaH, including act dynamics
    */
   int Act_DeltaH(int x, int y, int xp, int yp, PDE *PDEfield = 0);
