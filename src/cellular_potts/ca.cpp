@@ -1078,6 +1078,11 @@ int CellularPotts::AmoebaeMove(PDE *PDEfield, bool anneal) {
         yp = yp - sizey + 2;
     }
 
+    // Avoid copying borders to cells or background and same cell to the same cell
+    if (sigma[xp][yp]== -1 || sigma[x][y]== -1 || sigma[x][y]== sigma[xp][yp]){
+      continue;
+    }
+
     // connectivity dissipation:
     H_diss = 0;
     if (!ConnectivityPreservedP(x, y))
@@ -1131,6 +1136,7 @@ int CellularPotts::AmoebaeMove(PDE *PDEfield, bool anneal) {
     }
   }
   act_field.Decrease();
+  std::cerr << "SumDH=" << SumDH << "\n";
   return SumDH;
 }
 
@@ -2490,6 +2496,35 @@ void CellularPotts::GrowAndDivideCells(int growth_rate) {
   }
   DivideCells(which_cells);
 }
+// Function to check if (x, y) is inside the hexagonal array of circles
+bool CellularPotts::isInsideHexagonalArray(int x, int y, double r, double d) {
+    int dx = d;                 // Horizontal distance between centers
+    int dy = round(std::sqrt(3) * d); // Vertical distance between centers
+
+    int reduced_x = x % dx;
+    int reduced_y = y % dy;
+
+    reduced_x = std::min(reduced_x,dx-reduced_x);
+    reduced_y = std::min(reduced_y,dy-reduced_y);
+
+    // Check if (x, y) is inside the circle
+    if ((std::pow(reduced_x, 2) + std::pow(reduced_y, 2)) <= std::pow(r, 2)) {
+        return true;
+    } else if ((std::pow(reduced_x-dx/2, 2) + std::pow(reduced_y-dy/2, 2)) <= std::pow(r, 2)){
+        return true;
+    }
+    return false;
+}
+
+// 
+void CellularPotts::AddHexPillars(int r, int gap_width){
+  for (int x = 1; x < sizex - 1; x++)
+    for (int y = 1; y < sizey - 1; y++) {
+      if (isInsideHexagonalArray(x,y,r,gap_width+2*r)) {
+        sigma[x][y]=-1;
+      }
+    }
+  }
 
 double CellularPotts::DrawConvexHull(Graphics *g, int color) {
   // Draw the convex hull of the cells

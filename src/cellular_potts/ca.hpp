@@ -424,6 +424,11 @@ public:
   */
   void GrowAndDivideCells(int growth_rate);
 
+  bool isInsideHexagonalArray(int x, int y, double r, double d);
+
+  void AddHexPillars(int r, int gap_width);
+
+
   inline Cell &getCell(int c) { return (*cell)[c]; }
 
   inline vector<Cell> *getCellArray() { return cell; }
