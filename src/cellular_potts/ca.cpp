@@ -1265,6 +1265,11 @@ int CellularPotts::AmoebaeMove(PDE *PDEfield, bool anneal) {
         yp = yp - sizey + 2;
     }
 
+    // Avoid copying borders to cells or background and same cell to the same cell
+    if (sigma[xp][yp]== -1 || sigma[x][y]== -1 || sigma[x][y]== sigma[xp][yp]){
+      continue;
+    }
+
     // connectivity dissipation:
     H_diss = 0;
     if (!ConnectivityPreservedP(x, y))
@@ -3109,7 +3114,6 @@ void CellularPotts::DivideCellsWithRule(std::string method,int cell_type) {
     DivideCells(which_cells);
   }
 }
-
 
 double CellularPotts::DrawConvexHull(Graphics *g, int color) {
   // Draw the convex hull of the cells
