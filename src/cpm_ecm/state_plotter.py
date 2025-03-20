@@ -39,7 +39,7 @@ class StatePlotter:
         self._img_height = img_height
         self._img_width = int(img_height * Lx / Ly)
         self._dpi = 100.0
-        offset = 75.0
+        offset = 0.0
 
         figsize = (self._img_width / self._dpi, self._img_height / self._dpi)
         self._fig = plt.figure(figsize=figsize, dpi=self._dpi)
@@ -126,6 +126,11 @@ class StatePlotter:
             else:
                 line, = plt.plot(x, y, '-', color='#40597F', alpha=0.8, linewidth= 0.5)
                 self._bond_lines.append(line)
+
+        # Hide bond_lines that are not in the bond_groups.
+        if len(self._bond_lines) > len(bond_groups):
+            for i in range(len(bond_groups),len(self._bond_lines)):
+                self._bond_lines[i].set_visible(False)
 
         adhesions = par_pos[par_type == ParticleType.adhesion.value]
         self._adhesion_marks.set_data(adhesions[:, 0], adhesions[:, 1])
