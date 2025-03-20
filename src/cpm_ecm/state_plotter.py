@@ -115,6 +115,14 @@ class StatePlotter:
         pos_x = par_pos[:, 0]
         pos_y = par_pos[:, 1]
 
+        # Removing duplicated items from bond_groups.
+        # This avoids redrawing fibers on the edges of different domains 
+        # in parallel simulations
+        unique_dic  = {}
+        for i in range(len(bond_groups)):
+            unique_dic[tuple(sorted(bond_groups[i,:]))] = i
+        bond_groups =  np.array(list(unique_dic.keys()))
+
         _logger.debug(f'bond_groups: {len(bond_groups)}')
         _logger.debug(f'bond_lines: {len(self._bond_lines)}')
         for i in range(len(bond_groups)):
