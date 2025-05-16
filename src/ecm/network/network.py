@@ -450,15 +450,28 @@ class Network:
         self.particles_typeid = np.hstack((self.particles_typeid,particle_type*np.ones(n_added_particles,dtype=int)))
 
     def network_from_image(self,par):
-        # Generating the position of strands using a 2d matrix file (image)
-        if len(par.network_file)==0:
-            raise RuntimeError("For using the 'file' method the path to the file should be specified via network_file.")
-        
-        num_fibers          = par.strands
+        """ enerating the position of strands using an image file.
+        The darker the pixel the more probable to have a fiber.
+        """
 
+        if len(par.network_file)==0:
+            raise RuntimeError("For using the 'file' method the path to the file should be specified via network_file parameter.")
+
+        num_fibers          = par.strands
         pos_cen = np.zeros((num_fibers, 2))
 
+        # Reading the image
         img = Image.open(par.network_file)
+
+        # Checking the image aspect ratio
+        if (img.width != par.box_size_x or img.height != par.box_size_y):
+            _logger.warning(f'The image size ({img.width}x{img.height}) is not the same as the simulation box ({par.box_size_x}x{par.box_size_y}).')
+            if abs(img.width/img.height - par.box_size_x/par.box_size_y) <= 0.1:
+                _logger.warning(f'The aspect ratios are compatible. The image is resized to match the simulation box.')
+                img = img.resize((par.box_size_x, par.box_size_y))
+            else:
+                raise RuntimeError("Please resize the image to match the simulation box.")
+
         # convert to RGB image if it is not so.
         if img.mode!= 'RGB':
             img=img.convert('RGB')        
@@ -473,11 +486,13 @@ class Network:
         pmf_x = np.sum(img,axis=0)/np.sum(img[:])
         cmf_x = [np.sum(pmf_x[0:i+1]) for i in range(0,len(pmf_x))]
 
-        # Generating the random positions Using inverse sampling method
+        # Generating the random positions using inverse sampling method
         U_x = np.random.uniform(0, 1, size=num_fibers)
         U_y = np.random.uniform(0, 1, size=num_fibers)
 
+        # Generating the x-coordinates of the center of the fibers
         for j in range(num_fibers):
+            # Mapping the U_x values to position by invertiing the cumulative mass function (cmf)
             p = U_x[j]
             for i in range(len(cmf_x)):
                 if p<cmf_x[i]:
@@ -489,7 +504,9 @@ class Network:
             cmf_i1 = cmf_x[i]
             pos_cen[j,0] = i-1 + (p - cmf_i0)/(cmf_i1-cmf_i0)
 
+        # Generating the y-coordinates of the center of the fibers
         for j in range(num_fibers):
+            # Calculaing the cumulative mass function for the y-coordinates based on the given x-coordinate
             x = pos_cen[j,0]
             x0 = np.floor(x)
             if x0 == -1:
@@ -500,6 +517,7 @@ class Network:
             pmf_x_sam = pmf_x_sam /np.sum(pmf_x_sam)
             cmf_x_sam = [np.sum(pmf_x_sam[0:i+1]) for i in range(0,pmf_2d.shape[0])]
             
+            # Mapping the U_y values to position by invertiing the cumulative mass function
             p = U_y[j]
             for i in range(len(cmf_x_sam)):
                 if p<cmf_x_sam[i]:
@@ -521,8 +539,6 @@ class Network:
                 r = l_c / 2 - j * l_c / (particles_per_fiber - 1)
                 pos[i,j,0] = pos_cen[i,0] + r * np.cos(angles[i])
                 pos[i,j,1] = pos_cen[i,1] + r * np.sin(angles[i])
-
-        # TODO: Cleaning and matching image size to the box size.
 
         return pos
 

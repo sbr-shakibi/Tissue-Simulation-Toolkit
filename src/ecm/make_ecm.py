@@ -35,8 +35,7 @@ def impose_default_settings(instance):
 
     default_setting_dic = { "network_type":         "random",
                             "network_square_size":  -1.0, # This is used as a default value to avoid errors.
-                            "network_file_path":    "",
-                            "network_file_scale": 1.0}
+                            "network_file_path":    ""}
 
     for key in default_setting_dic.keys():
         if not key in instance._settings_manager.base.keys():
