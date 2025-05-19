@@ -29,7 +29,6 @@ class GenerationParameters:
         network_type (str): The type method used for network generation, can be "random" (default), "outside square" or "file" 
         network_square_size (float): The square size used in the method "outside square"
         network_file (str): The path to an image file [2D matrix] used for generating the fibers using the "file" method.
-        network_file_scale (float): The scaling factor used for generating the fibers using the "file" method. Default value is 1.0.
 
         contour_length (float): Length of fiber along the curve
         strands (int): Number of fibers to generate

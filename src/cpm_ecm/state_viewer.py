@@ -44,7 +44,6 @@ def main() -> None:
                 ecm_state_msg = instance.receive('ecm_state_in')
 
                 particles = ecm_state_msg.data['particles']
-                print(type(cpm_state_msg.data['cpm']))
 
                 plotter.draw(
                         i,

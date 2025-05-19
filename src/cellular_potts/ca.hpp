@@ -133,9 +133,6 @@ public:
       for (int j = 0; j < par.sizey; j++ ){
         PixelPos pos(i,j);
         act_values[j][i] = std::int32_t (act_field.Value(pos));
-        //if (std::int32_t(act_values[j][i]) != 0){
-          //std::cerr << i << "  " << j << " " << act_values[j][i] << std::endl;
-        //}
       }
     }
   return act_values;

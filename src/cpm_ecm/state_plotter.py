@@ -39,7 +39,7 @@ class StatePlotter:
         self._img_height = img_height
         self._img_width = int(img_height * Lx / Ly)
         self._dpi = 100.0
-        offset = 0.0
+        offset = 75.0
 
         figsize = (self._img_width / self._dpi, self._img_height / self._dpi)
         self._fig = plt.figure(figsize=figsize, dpi=self._dpi)

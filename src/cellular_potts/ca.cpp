@@ -1170,7 +1170,6 @@ int CellularPotts::AmoebaeMove(PDE *PDEfield, bool anneal) {
     }
   }
   act_field.Decrease();
-  std::cerr << "SumDH=" << SumDH << "\n";
   return SumDH;
 }
 
