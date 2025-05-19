@@ -30,6 +30,8 @@ def parse_args() -> Namespace:
     parser.add_argument(
             '--image-height', type=int, default=600,
             help='Height of the image in pixels')
+    parser.add_argument('--output-format', type=str,
+                        default='png',help = 'Format of the output files (should be compatible with matplotlib.pyplot.savefig)')
     args = parser.parse_args()
     return args
 
@@ -37,6 +39,7 @@ def parse_args() -> Namespace:
 def main() -> None:
     args = parse_args()
     data_dir = find_data_dir(args.dir)
+    FMT = args.output_format
 
     files = sorted([
             Path(f) for f in data_dir.iterdir()
@@ -45,7 +48,7 @@ def main() -> None:
     plotter: Optional[StatePlotter] = None
 
     for data_file in files:
-        if data_file.with_suffix('.png').exists():
+        if data_file.with_suffix('.' + FMT).exists():
             continue
 
         with data_file.open('rb') as f:
@@ -73,7 +76,9 @@ def main() -> None:
                 data['ecm_state']['bonds']['groups'].array,
                 data['cpm_state']['pde'].array,
                 data['cpm_state']['cpm'].array,
-                draw=False, save=True, out_dir=data_dir)
+                data['cpm_state']['act_field'].array,
+                draw=False, save=True, out_dir=data_dir,
+                output_format=FMT)
 
 if __name__ == '__main__':
     main()

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Union
 
 
 @dataclass
@@ -24,6 +25,10 @@ class GenerationParameters:
         top_fixed (bool): Whether to fix particles above the top (+Ly)
                 border of the domain. Only applies if `fixed_boundary` is
                 False.
+
+        network_type (str): The type method used for network generation, can be "random" (default), "outside square" or "file" 
+        network_square_size (float): The square size used in the method "outside square"
+        network_file (str): The path to an image file [2D matrix] used for generating the fibers using the "file" method.
 
         contour_length (float): Length of fiber along the curve
         strands (int): Number of fibers to generate
@@ -53,6 +58,10 @@ class GenerationParameters:
     fixed_boundary: bool
     bottom_fixed: bool
     top_fixed: bool
+
+    network_type: str
+    network_square_size: float
+    network_file: str
 
     contour_length: float
     strands: int
