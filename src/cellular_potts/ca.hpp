@@ -123,21 +123,6 @@ public:
   /* Adding an instance of the ActField class to the CellularPotts class */
   ACT::ActField act_field;
 
-  // Return ActField in an array
-  std::int32_t **getActField(void) {
-    std::int32_t ** act_values = new std::int32_t *[par.sizey];
-    for(int i = 0; i < par.sizey; ++i)
-        act_values[i] = new std::int32_t [par.sizex];
-
-    for (int i = 0; i < par.sizex; i++){
-      for (int j = 0; j < par.sizey; j++ ){
-        PixelPos pos(i,j);
-        act_values[j][i] = std::int32_t (act_field.Value(pos));
-      }
-    }
-  return act_values;
-  }
-
   //! \brief Constructs a CA field. This should be done in "Dish".
   CellularPotts(std::vector<Cell> *cells, const int sizex = 200,
                 const int sizey = 200);

@@ -68,7 +68,7 @@ class StatePlotter:
             self, i: int, par_pos: npt.NDArray[np.float64],
             par_type: npt.NDArray[np.int32], bond_groups: npt.NDArray[np.int32],
             pde: npt.NDArray[np.float64], 
-            cpm: npt.NDArray[np.int32], actfield: npt.NDArray[np.float64], 
+            cpm: npt.NDArray[np.int32], actfield: dict, 
             draw: bool = True, save: bool = True, out_dir: Optional[Path] = None,
             output_format: str = 'png') -> None:
         """Update the diagram with new data
@@ -156,7 +156,7 @@ class StatePlotter:
         self._pde_image = plt.imshow(
                 pde[0], origin = 'upper', cmap = matplotlib.colormaps['hot_r'])
 
-    def _draw_act(self, actfield: npt.NDArray[np.float64]) -> None:
+    def _draw_act(self, actfield: dict) -> None:
         """Update the ACT part of the diagram
 
         Args:
@@ -165,8 +165,16 @@ class StatePlotter:
         if self._act_image:
             self._act_image.remove()
 
+        # Converting the dictonary data into an integer grid
+        act_grid= np.zeros((int(2 * self._Ly),int(2 * self._Lx)),dtype=int)
+        for key in actfield.keys():
+            comma_loc = key.find(',')
+            i = int(key[:comma_loc])
+            j = int(key[comma_loc+1:])
+            act_grid[j,i] = actfield[key]
+
         self._act_image = plt.imshow(
-                actfield, origin = 'upper', cmap = matplotlib.colormaps['hot_r'],vmin=0,vmax=500)
+                act_grid, origin = 'upper', cmap = matplotlib.colormaps['hot_r'])
 
     def _draw_cpm(self, cpm: npt.NDArray[np.int32]) -> None:
         """Update the CPM state part of the diagram

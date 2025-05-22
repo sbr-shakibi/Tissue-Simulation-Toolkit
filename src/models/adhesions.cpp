@@ -171,13 +171,11 @@ TIMESTEP {
                         static_cast<std::size_t>(pde->SizeX()),
                         static_cast<std::size_t>(pde->SizeY())},
                        {"layer", "x", "y"}, StorageOrder::first_adjacent);
-        std::int32_t *act_field = dish->CPM->getActField()[0];
-        Data act_state =
-            Data::grid(act_field,
-                       {static_cast<std::size_t>(dish->CPM->SizeX()),
-                        static_cast<std::size_t>(dish->CPM->SizeY())},
-                       {"x", "y"}, StorageOrder::last_adjacent);
-        Data state = Data::dict("cpm", cpm_state, "pde", pde_state,"act_field",act_state);
+
+        ACT::ActField act_field = dish->CPM->act_field;
+        Data ActField2DataDict(ACT::ActField act_field);
+        Data act_field_dic = ActField2DataDict(act_field);
+        Data state = Data::dict("cpm", cpm_state, "pde", pde_state,"act_field",act_field_dic);
         instance->send("state_out", Message(i, state));
       }
     }
@@ -200,6 +198,27 @@ TIMESTEP {
     std::terminate();
   }
   PROFILE_PRINT
+}
+
+// Converting Actfield dictionary into a MUSCLE data dictionary   
+Data ActField2DataDict(ACT::ActField AF){
+  Data AF_dic = Data::dict();
+  for (int i = 0; i < par.sizex; i++){
+    for (int j = 0; j < par.sizey; j++ ){
+      PixelPos pos(i,j);
+      // Writing only non-zero values for speed
+      if (AF.Value(pos) !=0){
+        // assuming a comma seperated format for keys
+        // keys should be strings as required by MUSCLE
+        std::string str;
+        str.append(std::to_string(i));
+        str.append(",");
+        str.append(std::to_string(j));
+        AF_dic[str]= std::int32_t (AF.Value(pos));
+        }
+    }
+  }
+  return AF_dic;
 }
 
 void PDE::InitialisePDE(CellularPotts *cpm) {
