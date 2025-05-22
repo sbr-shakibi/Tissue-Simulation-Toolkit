@@ -61,7 +61,7 @@ class GenerationParameters:
 
     network_type: str
     network_square_size: float
-    network_file: str
+    network_file_path: str
 
     contour_length: float
     strands: int

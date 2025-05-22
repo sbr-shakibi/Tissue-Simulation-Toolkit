@@ -8,6 +8,7 @@ TST_DIR   = src
 QMAKE     = qmake
 # Edit the above line as necessary, e.g., as follows:
 #QMAKE    = /Applications/Qt5/6.4.0/macos/bin/qmake
+PY=python3 # python3.11 
 
 MODELS = bin/vessel bin/qPotts bin/sorting bin/Act_model
 
@@ -47,7 +48,7 @@ MUSCLE3:
 # Python virtual environment and components
 
 # Derive Python install location
-PYTHON_VERSION = $(shell python -c 'import sys; print("python{}.{}".format(*sys.version_info[0:2]))')
+PYTHON_VERSION = $(shell ${PY} -c 'import sys; print("python{}.{}".format(*sys.version_info[0:2]))')
 
 # Python version number
 PYTHON_VERNUM := $(wordlist 2,4,$(subst ., ,$(shell $(PYTHON_VERSION) --version 2>&1)))
@@ -107,7 +108,7 @@ endif  # ENABLE_MPI
 # Due to dependency issues with Python3.12 and Muscle3, we create a VENV with the highest available python less than 3.12
 # Numpy also got a major update recently, and some dependencies do not work with the newer version unfortunately.
 $(VENV): pyver
-	python3 -m venv venv
+	${PY} -m venv venv
 
 $(VENV_NUMPY): $(VENV)
 	. venv/bin/activate && python3 -m pip install numpy==1.25.0
