@@ -45,7 +45,7 @@ docker run -it \
 
 This command starts the container with GUI support for visualization tools.
 
-## 5. Run the Simulation
+## 5. Run standalone Cellular Potts Model (TST)
 
 Inside the Docker container:
 
@@ -53,6 +53,8 @@ Inside the Docker container:
 cd bin
 ./vessel ../data/chemotaxis.par
 ```
+
+## 6. Run Cellular Potts Model with Extra-Cellular Matrix (TST-MD)
 
 To activate the Python virtual environment and run the simulation manager:
 
