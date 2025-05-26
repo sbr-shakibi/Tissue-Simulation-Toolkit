@@ -1,7 +1,7 @@
 # Dockerfile for Tissue Simulation Toolkit 2.0
 # Requires docker, ssh access to github and X11 forwarding to run the GUI
 # Created during the TST-MD hackaton 22+23 May 2025 in Leiden
-# If you have questions contact Zoë Lange, zlange at fias.uni-frankfurt.de
+# If you have questions contact Zoë Lange (zoelx)
 
 FROM debian:buster
 
