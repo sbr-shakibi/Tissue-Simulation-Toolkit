@@ -1,10 +1,10 @@
 # Tissue Simulation Toolkit - Docker Setup
 
-This guide describes how to build and run the Tissue Simulation Toolkit (`tst2-docker`) with Docker, including X11 GUI support and SSH access to GitHub.
+This guide describes how to build and run the Tissue Simulation Toolkit with Docker (`tst2-docker`), including X11 GUI support and SSH access to GitHub.
 
 ## Prerequisites
 
-* Docker
+* [Docker](https://docker.com)
 * X11 server (e.g., [XQuartz](https://www.xquartz.org/) on macOS, X11 on Linux)
 * SSH keys configured for GitHub access
 
