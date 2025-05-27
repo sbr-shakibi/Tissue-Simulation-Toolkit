@@ -33,6 +33,11 @@ XSDE:
 	$(MAKE) -C $(XSDE_DIR)
 
 MCDS: XSDE
+# Replacing the Makefile content for installation of MultiCellDS on MacOS devices.
+# This replaces "export COMPILE_CFLAGS := -O3 -s -mfpmath=both -m64 -std=c++11" into "export COMPILE_CFLAGS := -O3 -m64 -std=c++11" automatically.
+ifeq ($(shell uname -s),Darwin)
+	sed -i '' 's/-s -mfpmath=both//g' $(MCDS_DIR)/Makefile
+endif
 	$(MAKE) -C $(MCDS_DIR) objects
 
 LIBCS: MCDS
