@@ -13,7 +13,7 @@ void start_graphics(int argc, char **argv) {
   QApplication a(argc, argv);
   QtGraphics g(window_size_x, window_size_y);
   a.connect(&g, SIGNAL(SimulationDone(void)), SLOT(quit(void)));
-  g.show();
+  if (par.graphics) g.show();
   a.exec();
 #endif
 

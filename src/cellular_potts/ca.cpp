@@ -538,6 +538,50 @@ int CellularPotts::DeltaH(int x, int y, int xp, int yp, PDE *PDEfield,
         par.lambda *
         (2. + 2. * (double)((*cell)[sxyp].Area() - (*cell)[sxyp].TargetArea() -
                             (*cell)[sxy].Area() + (*cell)[sxy].TargetArea()))));
+    
+    //! Perimeter constraint, only available when par.area_constraint_type==0, ??? - RM -???
+       //! in other words,
+       // when the target area constraint is in place
+       int DH_perimeter = 0;
+       if (par.lambda_perimeter>0)
+       {
+           // cerr << "Applying perimeter constraint...: ";
+           if (sxyp == MEDIUM)
+           {
+               DH_perimeter -= par.lambda_perimeter *
+               (DSQR((*cell)[sxy].Perimeter() -
+                     (*cell)[sxy].TargetPerimeter()) -
+                DSQR(GetNewPerimeterIfXYWereRemoved(sxy, x, y) -
+                     (*cell)[sxy].TargetPerimeter()));
+           }
+           else if (sxy == MEDIUM)
+           {
+               
+               DH_perimeter -= par.lambda_perimeter *
+               (DSQR((*cell)[sxyp].Perimeter() -
+                     (*cell)[sxyp].TargetPerimeter()) -
+                DSQR(GetNewPerimeterIfXYWereAdded(sxyp, x, y) -
+                     (*cell)[sxyp].TargetPerimeter()));
+           }
+           // they're both cells
+           else
+           {
+               
+               DH_perimeter -= par.lambda_perimeter *
+               ((DSQR((*cell)[sxyp].Perimeter() -
+                      (*cell)[sxyp].TargetPerimeter()) -
+                 DSQR(GetNewPerimeterIfXYWereAdded(sxyp, x, y) -
+                      (*cell)[sxyp].TargetPerimeter())));
+               
+               DH_perimeter -= par.lambda_perimeter *
+               (DSQR((*cell)[sxy].Perimeter() -
+                     (*cell)[sxy].TargetPerimeter()) -
+                DSQR(GetNewPerimeterIfXYWereRemoved(sxy, x, y) -
+                     (*cell)[sxy].TargetPerimeter()));
+           }
+       }
+    DH += DH_perimeter;
+
 
   /* Chemotaxis */
   if (PDEfield && (par.vecadherinknockout || (sxyp == 0 || sxy == 0))) {
