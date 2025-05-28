@@ -629,7 +629,8 @@ int CellularPotts::DeltaH(int x, int y, int xp, int yp, PDE *PDEfield,
                   DSQR((*cell)[sxy].GetNewLengthIfXYWereRemoved(x, y) -
                        (*cell)[sxy].TargetLength()))));
   }
-    double dh_move = VectorMoveDeltaH(x,y,xp,yp);
+    double dh_move;
+    if (par.lambda_move>0) dh_move = VectorMoveDeltaH(x,y,xp,yp);
     //fprintf(stderr, "dh_move = %lf\n", dh_move);
     
     DH -= dh_move;

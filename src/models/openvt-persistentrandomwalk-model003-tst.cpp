@@ -199,8 +199,9 @@ INIT {
         CPM->ConstructInitCells(*this);
         CPM->MeasureCellPerimeters();
         Cell::SetJ(0,1,0);
-        CPM->getCell(1).v[0]=1.;
-        CPM->getCell(1).v[1]=0.;
+        double target_angle = model.model_args["target_angle"].get<double>();
+        CPM->getCell(1).v[0]= cos(target_angle);
+        CPM->getCell(1).v[1]= sin(target_angle);
         
     } else { // If a configuration file is provided
       io->ReadConfiguration();
@@ -406,7 +407,8 @@ int main(int argc, char *argv[]) {
                 par.sizex = model.len_1;
                 par.sizey = model.len_2;
             par.lambda_move = model.model_args["lambda_dir"].get<double>();
-            cerr << "par.lambda_move: " << par.lambda_move << endl;
+            
+           // cerr << "par.lambda_move: " << par.lambda_move << endl;
             //std::string mode = model.model_args["cpm_force_mode"];
             
                 
