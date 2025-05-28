@@ -101,6 +101,8 @@ PARAMETER(double, lambda2, 5.0, "Energy parameter for copy or flip attempt")
 
 PARAMETER(int, target_area, 100, "Target area for all cells")
 PARAMETER(int, target_perimeter, 0, "Target perimeter length for all cells")
+PARAMETER(int, target_length, 60, "Target cell length for all cells")
+
 
 PARAMETER(int, conn_diss, 2000, "Energy required to split a cell in two")
 
@@ -133,8 +135,8 @@ PARAMETER(double, lambda_Act, 0.0, "Energy per Actin concentration")
 PARAMETER(double, max_Act, 0.0, "Maximum Actin concentration")
 PARAMETER(int, lambda_perimeter, 0,
           "Energy parameter for perimeter length term")
-PARAMETER(double, lambda_matrix, 0.0,
-          "Energy required to retract a lattice site that contains an adhesion")
+PARAMETER(double, lambda_matrix, 0.0, "Energy required to retract a lattice site that contains an adhesion")
+PARAMETER(double, lambda_move, 0.0, "Lagrange multiplier for directed motion")
 PARAMETER(double, spontaneous_p, 0.001,
           "Something to do with adhesion generation?")
 PARAMETER(double, decay_p, 0.02, "Something to do with adhesion destruction?")
@@ -232,5 +234,4 @@ SECTION("Obsolete and unused")
 
 PARAMETER(bool, gradient, false, "Obsolete, unused")
 PARAMETER(int, adhesion_storage_stride, 0, "Unused")
-PARAMETER(int, target_length, 60, "Target cell length for all cells, unused")
 PARAMETER(int, J_pol, 0, "Unused")

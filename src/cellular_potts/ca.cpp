@@ -629,7 +629,45 @@ int CellularPotts::DeltaH(int x, int y, int xp, int yp, PDE *PDEfield,
                   DSQR((*cell)[sxy].GetNewLengthIfXYWereRemoved(x, y) -
                        (*cell)[sxy].TargetLength()))));
   }
+    double dh_move = VectorMoveDeltaH(x,y,xp,yp);
+    //fprintf(stderr, "dh_move = %lf\n", dh_move);
+    
+    DH -= dh_move;
   return DH;
+}
+
+double CellularPotts::VectorMoveDeltaH(int x, int y, int xp, int yp) {
+    double vec_move[2] = {0.,0.};
+    vec_move[0]=(double)x-(double)xp;
+    vec_move[1]=(double)y-(double)yp;
+    
+    // average
+    int cell1=sigma[x][y];
+    int cell2=sigma[xp][yp];
+    
+    //cerr << "cells: " << cell1 << ", " << cell2 << endl;
+    double cv[2]={0.,0.};
+    if (cell1 && cell2) {
+        cv[0]=((*cell)[cell1].v[0]+(*cell)[cell2].v[0])/2.;
+        cv[1]=((*cell)[cell1].v[1]+(*cell)[cell2].v[1])/2.;
+    } else {
+        if (cell1) {
+            cv[0]=(*cell)[cell1].v[0];
+            cv[1]=(*cell)[cell1].v[1];
+        } else {
+            if (cell2) {
+                cv[0]=(*cell)[cell2].v[0];
+                cv[1]=(*cell)[cell2].v[1];
+            } else {
+                return 0.;
+            }
+        }
+    }
+    //cerr << "cv = " << cv[0] << ", "  << cv[1] << endl;
+    double dotproduct = cv[0] * vec_move[0] + cv[1] * vec_move[1];
+    
+    return par.lambda_move * dotproduct;
+    
 }
 
 int CellularPotts::Act_AmoebaeMove(PDE *PDEfield) {

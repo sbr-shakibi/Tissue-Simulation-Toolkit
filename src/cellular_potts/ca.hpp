@@ -473,7 +473,9 @@ private:
    */
   int DeltaH(int x, int y, int xp, int yp, PDE *PDEfield,
              AdhesionDisplacements *adh_disp);
-
+    /*! \brief Energy for directed cell motion
+     */
+    double VectorMoveDeltaH(int x, int y, int xp, int yp);
   /*! \brief DeltaH, including act dynamics
    */
   int Act_DeltaH(int x, int y, int xp, int yp, PDE *PDEfield = 0);

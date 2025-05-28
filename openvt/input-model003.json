@@ -1,0 +1,159 @@
+{
+    "model": {
+        "cpm_temperature": 10,
+        "cpm_area_c": 36,
+        "cpm_area_v": 2.0,
+        "cpm_perim_c": 60.0,
+        "cpm_perim_v": 2.0,
+        "len_1": 100,
+        "len_2": 100,
+        "cpm_nbs_n": 2,
+        "cpm_surface_nbs_n": 2,
+        "max_time": 1000,
+        "method": "CPM",
+        "model": "MODEL003",
+        "model_args": {
+            "lambda_dir": 10.0,
+            "target_angle": 0.0,
+            "cpm_force_mode": "extension",
+            "cpm_update_direction": "source-to-target-unnorm"
+        }
+    },
+    "sim": {
+        "num_sims": 100,
+        "output_name": "model003",
+        "output_per": 1,
+        "init_voxels": [
+            [
+                49,
+                47
+            ],
+            [
+                50,
+                47
+            ],
+            [
+                51,
+                47
+            ],
+            [
+                52,
+                47
+            ],
+            [
+                49,
+                48
+            ],
+            [
+                50,
+                48
+            ],
+            [
+                51,
+                48
+            ],
+            [
+                52,
+                48
+            ],
+            [
+                49,
+                49
+            ],
+            [
+                50,
+                49
+            ],
+            [
+                51,
+                49
+            ],
+            [
+                52,
+                49
+            ],
+            [
+                48,
+                50
+            ],
+            [
+                49,
+                50
+            ],
+            [
+                50,
+                50
+            ],
+            [
+                51,
+                50
+            ],
+            [
+                52,
+                50
+            ],
+            [
+                48,
+                51
+            ],
+            [
+                49,
+                51
+            ],
+            [
+                50,
+                51
+            ],
+            [
+                51,
+                51
+            ],
+            [
+                52,
+                51
+            ],
+            [
+                48,
+                52
+            ],
+            [
+                49,
+                52
+            ],
+            [
+                50,
+                52
+            ],
+            [
+                51,
+                52
+            ],
+            [
+                52,
+                52
+            ],
+            [
+                49,
+                53
+            ],
+            [
+                50,
+                53
+            ],
+            [
+                51,
+                53
+            ],
+            [
+                50,
+                54
+            ]
+        ]
+    },
+    "cc3d": {
+        "output_name": "model003_cc3d"
+    },
+    "artistoo": {
+        "prng": "MersenneTwister"
+    }
+}
