@@ -31,7 +31,7 @@ xhost + ${hostname}
 Navigate to the folder containing the Dockerfile and build the image:
 
 ```bash
-docker build --ssh default -t tst2-docker:latest .
+docker build --ssh default --platform linux/amd64 -t tst2-docker:latest .
 ```
 
 ## 4. Run the Docker Container with X11 Support
@@ -67,3 +67,4 @@ muscle_manager --start-all ymmsl/adhesions.ymmsl ymmsl/plot_state.ymmsl
 
 * Make sure `XQuartz` or another X11 server is running and accepts connections before launching the Docker container.
 * If you encounter display issues on macOS, ensure `XQuartz` has “Allow connections from network clients” enabled in preferences.
+* When running `docker build` on an Apple Silicon Mac, the flag `--platform linux/amd64` ensures Docker builds for the Intel/AMD architecture (amd64). Without this, Docker defaults to arm64, which may not be fully supported by all dependencies or the Makefile, potentially causing build failures.
