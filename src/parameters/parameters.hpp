@@ -137,6 +137,8 @@ PARAMETER(int, lambda_perimeter, 0,
           "Energy parameter for perimeter length term")
 PARAMETER(double, lambda_matrix, 0.0, "Energy required to retract a lattice site that contains an adhesion")
 PARAMETER(double, lambda_move, 0.0, "Lagrange multiplier for directed motion")
+PARAMETER(int, cell_move_dt, 0, "Time interval (in MCS) over which we evaluate the cell's recent displacement; this determines persistence time of the random walk.")
+
 PARAMETER(double, spontaneous_p, 0.001,
           "Something to do with adhesion generation?")
 PARAMETER(double, decay_p, 0.02, "Something to do with adhesion destruction?")

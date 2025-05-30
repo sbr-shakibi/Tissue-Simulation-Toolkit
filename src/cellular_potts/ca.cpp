@@ -629,41 +629,56 @@ int CellularPotts::DeltaH(int x, int y, int xp, int yp, PDE *PDEfield,
                   DSQR((*cell)[sxy].GetNewLengthIfXYWereRemoved(x, y) -
                        (*cell)[sxy].TargetLength()))));
   }
-    double dh_move;
-    if (par.lambda_move>0) dh_move = VectorMoveDeltaH(x,y,xp,yp);
+  // Done in AmoebaeMove as we need 'real' neighbors for periodic boundaries:
+    //double dh_move;
+    //if (par.lambda_move>0) dh_move = VectorMoveDeltaH(x,y,xp,yp);
     //fprintf(stderr, "dh_move = %lf\n", dh_move);
     
-    DH -= dh_move;
+    //DH -= dh_move;
   return DH;
 }
 
 double CellularPotts::VectorMoveDeltaH(int x, int y, int xp, int yp) {
+    
     double vec_move[2] = {0.,0.};
     vec_move[0]=(double)x-(double)xp;
     vec_move[1]=(double)y-(double)yp;
-    
+
     // average
-    int cell1=sigma[x][y];
-    int cell2=sigma[xp][yp];
+    int sxy=sigma[x][y];
+    int sxyp=sigma[xp][yp];
     
-    //cerr << "cells: " << cell1 << ", " << cell2 << endl;
+    //cerr << "cells: " << sxy << ", " << sxyp << endl;
     double cv[2]={0.,0.};
-    if (cell1 && cell2) {
-        cv[0]=((*cell)[cell1].v[0]+(*cell)[cell2].v[0])/2.;
-        cv[1]=((*cell)[cell1].v[1]+(*cell)[cell2].v[1])/2.;
+    // extension-retraction
+   /* if (sxy && sxyp) {
+        cv[0]=((*cell)[sxy].v[0]+(*cell)[sxyp].v[0])/2.;
+        cv[1]=((*cell)[sxy].v[1]+(*cell)[sxyp].v[1])/2.;
     } else {
-        if (cell1) {
-            cv[0]=(*cell)[cell1].v[0];
-            cv[1]=(*cell)[cell1].v[1];
+        if (sxy) {
+            cv[0]=(*cell)[sxy].v[0];
+            cv[1]=(*cell)[sxy].v[1];
         } else {
-            if (cell2) {
-                cv[0]=(*cell)[cell2].v[0];
-                cv[1]=(*cell)[cell2].v[1];
+            if (sxyp) {
+                cv[0]=(*cell)[sxyp].v[0];
+                cv[1]=(*cell)[sxyp].v[1];
             } else {
                 return 0.;
             }
         }
+    }*/
+    
+    // extension only
+    if (sxyp) {
+        cv[0]=(*cell)[sxyp].v[0];
+        cv[1]=(*cell)[sxyp].v[1];
+    } else {
+        if (sxy) {
+            return 0.;
+        }
     }
+    
+    
     //cerr << "cv = " << cv[0] << ", "  << cv[1] << endl;
     double dotproduct = cv[0] * vec_move[0] + cv[1] * vec_move[1];
     
@@ -1141,6 +1156,10 @@ int CellularPotts::AmoebaeMove(PDE *PDEfield, bool anneal) {
     // find the neighbouring site corresponding to this edge
     xp = nx[targetneighbour] + x;
     yp = ny[targetneighbour] + y;
+
+    // keep track of 'real' neighboring site, before corrections due to periodic boundaries
+    int xpr=xp, ypr=yp;
+
     if (par.periodic_boundaries) {
       // since we are asynchronic, we cannot just copy the borders once
       // every MCS
@@ -1160,7 +1179,7 @@ int CellularPotts::AmoebaeMove(PDE *PDEfield, bool anneal) {
       H_diss = par.conn_diss;
 
     AdhesionDisplacements adh_disp;
-    D_H = DeltaH(x, y, xp, yp, PDEfield, &adh_disp);
+    D_H = DeltaH(x, y, xp, yp, PDEfield, &adh_disp) - VectorMoveDeltaH(x, y, xpr,ypr);
 
     if ((p = CopyvProb(D_H, H_diss, anneal)) > 0) {
       if (par.adhesions_enabled)
@@ -2846,3 +2865,37 @@ int **CellularPotts::get_annealed_sigma(int steps) {
   sigma = tmp_a;
   return tmp_b;
 }
+
+void CellularPotts::CalcPeriodicSafeCentroids(void) {
+
+    Cell::sizex=sizex;
+    Cell::sizey=sizey;
+
+    const double two_pi = 2.0 * M_PI;
+    for (Cell &c : *cell) {
+        c.sum_sin_x=0.;
+        c.sum_cos_x=0.;
+        c.sum_sin_y=0.;
+        c.sum_cos_y=0.;
+    }
+
+    for (int x=1;x<=sizex-2;x++) {
+        for (int y=1;y<=sizey-2;y++) {
+            if (sigma[x][y]>0) {
+
+                        double theta_x = two_pi * static_cast<double>(x) / (sizex-2);
+                        double theta_y = two_pi * static_cast<double>(y) / (sizey-2);
+                        (*cell)[sigma[x][y]].sum_cos_x += std::cos(theta_x);
+                        (*cell)[sigma[x][y]].sum_sin_x += std::sin(theta_x);
+                        (*cell)[sigma[x][y]].sum_cos_y += std::cos(theta_y);
+                        (*cell)[sigma[x][y]].sum_sin_y += std::sin(theta_y);
+                    }
+
+                    //double avg_theta = std::atan2(sum_sin, sum_cos);
+                    //if (avg_theta < 0) avg_theta += two_pi;  // normalize to [0, 2π)
+
+                    //return domain_size * avg_theta / two_pi;
+                }
+            }
+        }
+

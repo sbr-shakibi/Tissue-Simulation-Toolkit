@@ -31,6 +31,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 #include "dish.hpp"
 #include "parameter.hpp"
 #include "sticky.hpp"
+#include "MovementTracker.hpp"
 
 #define HASHCOLNUM 255
 
@@ -61,6 +62,7 @@ Cell::~Cell(void) {
     J = 0;
   }
   delete[] chem;
+    delete mov_tracker;
 }
 
 void Cell::CellBirth(Cell &mother_cell) {
@@ -133,6 +135,10 @@ void Cell::ConstructorBody(int settau) {
   sum_yy = 0;
   sum_xy = 0;
   border = 0;
+  sum_sin_x = 0.;
+  sum_cos_x = 0.;
+  sum_sin_y = 0.;
+  sum_cos_y = 0.;
 
   //  growth_threshold=par.dthres;
   growth_threshold = 0;
@@ -141,6 +147,7 @@ void Cell::ConstructorBody(int settau) {
   n_copies = 0;
 
   chem = new double[par.n_chem];
+    mov_tracker = new MovementTracker(par.cell_move_dt);
 }
 
 /*! \brief Read a table of static Js.
@@ -191,4 +198,22 @@ void Cell::ClearJ(void) {
   for (int i = 0; i < capacity * capacity; i++) {
     J[0][i] = EMPTY;
   }
+}
+
+int Cell::sizex=0.;
+int Cell::sizey=0.;
+
+void Cell::GetCentroid(double *cx, double *cy) {
+    const double two_pi = 2.0 * M_PI;
+    if (par.periodic_boundaries) {
+        double avg_theta_x = std::atan2(sum_sin_x, sum_cos_x);
+        if (avg_theta_x < 0) avg_theta_x += two_pi;  // normalize to [0, 2π)
+        *cx = (sizex-2) * avg_theta_x / two_pi;
+        double avg_theta_y = std::atan2(sum_sin_y, sum_cos_y);
+        if (avg_theta_y < 0) avg_theta_y += two_pi;  // normalize to [0, 2π)
+        *cy = (sizey-2) * avg_theta_y / two_pi;
+    } else { // fast method
+        *cx = sum_x / area;
+        *cy = sum_y / area;
+    }
 }

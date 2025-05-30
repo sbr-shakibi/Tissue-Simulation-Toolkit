@@ -406,7 +406,7 @@ void GLGraphics::TimeStepWrap(void) {
   if (!paused)
     t++;
   extern Parameter par;
-  if (t == par.mcs) {
+  if (t > par.mcs) {
     exit(0);
   }
 }

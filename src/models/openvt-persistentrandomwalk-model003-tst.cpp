@@ -253,9 +253,9 @@ TIMESTEP {
     }
     // cout << "Compactness = " << dish-> CPM -> Compactness() << endl;
 
-    if (i == par.mcs) {
+   /* if (i == par.mcs) {
       dish->ExportMultiCellDS(par.mcds_output);
-    }
+    }*/
 
     if (par.store && !(i % par.storage_stride)) {
      

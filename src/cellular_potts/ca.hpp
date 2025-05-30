@@ -466,6 +466,7 @@ public:
       }
     }
   };
+  void CalcPeriodicSafeCentroids(void);
 
 private:
   /*! \brief Standard deltaH with are constraint, length constraint and

@@ -27,6 +27,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 //#define EMPTY -1
 #include <iostream>
 #include <math.h>
+#include "MovementTracker.hpp"
 
 extern Parameter par;
 class Dish;
@@ -81,11 +82,20 @@ public:
     sum_xx = src.sum_xx;
     sum_yy = src.sum_yy;
     sum_xy = src.sum_xy;
+    sum_sin_x = src.sum_sin_x;
+    sum_cos_x = src.sum_cos_y;
+    sum_sin_y = src.sum_sin_y;
+    sum_cos_y = src.sum_cos_y;
+
     owner = src.owner;
 
     chem = new double[par.n_chem];
     for (int ch = 0; ch < par.n_chem; ch++)
       chem[ch] = src.chem[ch];
+      
+    mov_tracker = new MovementTracker(*src.mov_tracker);
+      
+
   }
 
   /*! \brief Add a new cell to the dish.
@@ -120,6 +130,10 @@ public:
     sum_xx = src.sum_xx;
     sum_yy = src.sum_yy;
     sum_xy = src.sum_xy;
+    sum_sin_x = src.sum_sin_x;
+    sum_cos_x = src.sum_cos_y;
+    sum_sin_y = src.sum_sin_y;
+    sum_cos_y = src.sum_cos_y;
 
     border = src.border;
 
@@ -134,7 +148,22 @@ public:
 
     perimeter = src.perimeter;
     target_perimeter = src.target_perimeter;
+      //mov_tracker = src.mov_tracker;
+      mov_tracker = new MovementTracker(*src.mov_tracker);
     return *this;
+  }
+
+  inline MovementTracker::Coordinate MovementVector(void) {
+      return mov_tracker->movement_vector();
+  }
+
+  inline double MovementMagnitude(void) {
+      return mov_tracker->movement_magnitude();
+  }
+
+  inline void SetMovementAngle(const MovementTracker::Coordinate &alpha) {
+      v[0]=alpha.first;
+      v[1]=alpha.second;
   }
 
   /*! \brief Returns false if Cell has apoptosed (vanished). */
@@ -338,6 +367,15 @@ public:
     return adhesive_area = adhesive_area - decrement;
   }
 
+  //! Track the cell's current center of mass
+  void TrackPosition(void) {
+      double cx,cy;
+      GetCentroid(&cx, &cy);
+      mov_tracker->add_position(cx,cy);
+  }
+
+  //! Update cell vector
+
 private:
   /*! \brief Read a table of static Js.
     First line: number of types (including medium)
@@ -496,6 +534,7 @@ private:
 
   inline void setSigma(int nsigma) { sigma = nsigma; }
 
+
 private:
   //! Increments the cell's actual area by 1 unit.
   inline int IncrementArea() { return ++area; }
@@ -530,10 +569,9 @@ private:
   // (depends on Jtable)
   static int MaxTau(void) { return maxtau; }
 
-  inline void GetCentroid(double *cx, double *cy) {
-    *cx = sum_x / area;
-    *cy = sum_y / area;
-  }
+  //! Get the cell's current center of mass
+ void GetCentroid(double *cx, double *cy);
+
 
 protected:
   int colour;
@@ -574,7 +612,7 @@ protected:
   int perimeter;        // amount of cell's membrane
   int target_perimeter; // cell's target membrane length
 
-  double v[2];
+    double v[2];
   int n_copies; // number of expansions of this cell
   // gradient of a chemical (to be extended to the total number chemicals)
   double grad[2];
@@ -591,9 +629,15 @@ protected:
   long int sum_xx;
   long int sum_yy;
   long int sum_xy;
-
+  double sum_sin_x;
+  double sum_cos_x;
+  double sum_sin_y;
+  double sum_cos_y;
+  static int sizex;
+  static int sizey;
   double border;
 
+    MovementTracker *mov_tracker;
   const Dish *owner; // pointer to owner of cell
 };
 

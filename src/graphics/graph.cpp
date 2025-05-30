@@ -34,7 +34,7 @@ void start_graphics(int argc, char **argv) {
 #ifdef X11GRAPHICS
   X11Graphics g(window_size_x, window_size_y);
   int t;
-  for (t = 0; t < par.mcs; t++) {
+  for (t = 0; t <= par.mcs; t++) {
     g.TimeStep();
   }
 #endif

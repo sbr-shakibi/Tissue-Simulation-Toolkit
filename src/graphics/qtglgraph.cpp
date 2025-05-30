@@ -391,7 +391,7 @@ void QtGLGraphics::TimeStepWrap(void) {
   TimeStep();
   if (!paused)
     t++;
-  if (t == par.mcs) {
+  if (t > par.mcs) {
     exit(0);
   }
 }

@@ -198,7 +198,7 @@ void QtGraphics::TimeStepWrap(void) {
     t++;
   // check number of timesteps
   extern Parameter par;
-  if (t == par.mcs) {
+  if (t > par.mcs) {
     emit SimulationDone();
   }
 }
