@@ -69,7 +69,7 @@ RUN mkdir -p /home/mduser
 
 RUN --mount=type=ssh \
     git clone --recursive -b TST2.0 \
-        git@github.com:sbr-shakibi/Tissue-Simulation-Toolkit \
+        https://github.com/sbr-shakibi/Tissue-Simulation-Toolkit.git \
         /home/mduser/Tissue-Simulation-Toolkit \
     && cd /home/mduser/Tissue-Simulation-Toolkit
 
