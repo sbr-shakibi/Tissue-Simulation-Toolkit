@@ -24,15 +24,17 @@ Start your X11 server and allow connections from your local machine:
 xhost + ${hostname}
 ```
 
-> Replace `${hostname}` with the actual hostname of your machine, or use `localhost` if unsure.
+> You might have to replace `${hostname}` with the actual hostname of your machine or you can try `localhost` and `local:docker`. 
 
 ## 3. Build the Docker Image
 
 Navigate to the folder containing the Dockerfile and build the image:
 
 ```bash
-docker build --ssh default --platform linux/amd64 -t tst2-docker:latest .
+DOCKER_BUILDKIT=1 docker build --ssh default --platform linux/amd64 -t tst2-docker:latest .
 ```
+
+> On some machines you can omit `DOCKER_BUILDKIT=1` because this is set as default. In case you get the error `unknown flag --ssh` while running `docker build` with the preamble `DOCKER_BUILDKIT=1` it could mean you are using a Docker version older than 18.09. The `--ssh` flag was introduced as part of the Docker BuildKit, which only works in newer Docker versions.
 
 ## 4. Run the Docker Container with X11 Support
 
@@ -44,6 +46,8 @@ docker run -it \
 ```
 
 This command starts the container with GUI support for visualization tools.
+
+> In case you had to use `local:docker` as hostname in step 2, try `--env DISPLAY=$DISPLAY` if step 5 fails to connect to X display.
 
 ## 5. Run standalone Cellular Potts Model (TST)
 
