@@ -63,22 +63,15 @@ PYVER_MINOR := $(word 2,$(PYTHON_VERNUM))
 # Check the python version
 PYVER_MAJOR_REQ :=3
 PYVER_MINOR_MIN :=9
-PYVER_MINOR_MAX :=11
 
 PYVER_MINOR_MIN_OK := $(shell [ $(PYVER_MINOR) -ge $(PYVER_MINOR_MIN) ] && echo "1" || echo "0")
-PYVER_MINOR_MAX_OK := $(shell [ $(PYVER_MINOR) -le $(PYVER_MINOR_MAX) ] && echo "1" || echo "0")
 
 pyver:
-	@echo "Python must be >= $(PYVER_MAJOR_REQ).$(PYVER_MINOR_MIN) and <= $(PYVER_MAJOR_REQ).$(PYVER_MINOR_MAX). Current Python is $(PYTHON_VERSION)."
+	@echo "Python must be >= $(PYVER_MAJOR_REQ).$(PYVER_MINOR_MIN). Current Python is $(PYTHON_VERSION)."
 	@if [ $(PYVER_MAJOR) -ne $(PYVER_MAJOR_REQ) ]; then \
 		echo "Major version too low, python must be >= $(PYVER_MAJOR_REQ).$(PYVER_MINOR_MIN)".; \
 		exit 1; \
 	fi
-	@if [ $(PYVER_MINOR_MIN_OK) -eq 1 ]; then \
-		if [ $(PYVER_MINOR_MAX_OK) -eq 0 ]; then \
-			echo "Minor version too high, python must be <= $(PYVER_MAJOR_REQ).$(PYVER_MINOR_MAX)".; \
-			exit 1; \
-		fi \
 	else \
 		echo "Minor version too low, python must be >= $(PYVER_MAJOR_REQ).$(PYVER_MINOR_MIN)".; \
 		exit 1; \
