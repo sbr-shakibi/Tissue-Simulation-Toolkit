@@ -18,15 +18,17 @@ hoomd: $(HOOMD_LIB)
 # Set HOOMD_BUILD_OPTIONS to e.g. -DENABLE_GPU=ON -DENABLE_MPI=ON
 # Build with venv enabled, hoomd will pick it up and install into it later
 $(HOOMD_LIB):
-	python3 hoomd-blue/install-prereq-headers.py -y
+	python3 -m pip install --upgrade pip
+	python3 -m pip install cmake
 	mkdir -p build/hoomd
 	cd build/hoomd && cmake ../../hoomd-blue -DBUILD_TESTING=OFF $(HOOMD_BUILD_OPTIONS)
-	cmake --build build/hoomd -j $(HOOMD_CORES)
+	cmake  --build build/hoomd -j $(HOOMD_CORES)
 
 # Build with venv enabled to install dependencies correctly
 .PHONY: install
 install: $(HOOMD_LIB)
-	python3 hoomd-blue/install-prereq-headers.py -y
+	python3 -m pip install --upgrade pip
+	python3 -m pip install cmake
 	cmake --install build/hoomd
 
 .PHONY: clean
