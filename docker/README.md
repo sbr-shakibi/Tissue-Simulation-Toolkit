@@ -17,9 +17,17 @@ xhost + ${hostname}
 
 > You might have to replace `${hostname}` with the actual hostname of your machine or you can try `localhost` or `local:docker`. 
 
-## 2. Build the Docker Image
+## 2. Pull or Build the Docker Image
 
-Navigate to the folder containing the Dockerfile and build the image:
+You can either pull a pre-built docker image, or build your own image:
+
+To pull our pre-built docker image:
+
+```bash
+docker pull --platform linux/amd64 sbrshakibi/tst2-docker:latest
+```
+
+To build a docker image, navigate to the folder containing the Dockerfile and build the image:
 
 ```bash
 DOCKER_BUILDKIT=1 docker build --platform linux/amd64 -t tst2-docker:latest .
@@ -33,10 +41,10 @@ DOCKER_BUILDKIT=1 docker build --platform linux/amd64 -t tst2-docker:latest .
 docker run -it \
   --env DISPLAY=host.docker.internal:0 \
   --volume /tmp/.X11-unix:/tmp/.X11-unix \
-  --user root tst2-docker:latest
+  --user root sbrshakibi/tst2-docker:latest
 ```
 
-This command starts the container, and the terminal session switches to an interactive shell inside it. When a GUI application is launched from the container, a new window will appear displaying the application’s interface.
+Replace `sbrshakibi/tst2-docker:latest` with `tst2-docker:latest` if you built the docker image yourself. This command starts the container, and the terminal session switches to an interactive shell inside it. When a GUI application is launched from the container, a new window will appear displaying the application’s interface.
 
 ## 4. Run standalone Cellular Potts Model (TST)
 
