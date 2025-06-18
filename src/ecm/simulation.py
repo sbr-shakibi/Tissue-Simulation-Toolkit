@@ -173,15 +173,15 @@ class Simulation:
         # Set up box
         box_offset = 4
         safety_margin = par.contour_length
-        box_x = par.box_size_x + box_offset * par.contour_length + safety_margin
-        box_y = par.box_size_y + box_offset * par.contour_length + safety_margin
+        box_x = par.sizex + box_offset * par.contour_length + safety_margin
+        box_y = par.sizey + box_offset * par.contour_length + safety_margin
         snapshot.configuration.box = [box_x, box_y, 0.0, 0.0, 0.0, 0.0]
 
-        # Our standard coordinate ranges are [0, box_size_x] and [0, box_size_y]
+        # Our standard coordinate ranges are [0, sizex] and [0, sizey]
         # Hoomd wants everything centered at the origin. Add this to get from
         # standard to hoomd coordinates, subtract it to go from hoomd to standard.
         self._pos_offset = np.array([
-            -par.box_size_x / 2.0, -par.box_size_y / 2.0])
+            -par.sizex / 2.0, -par.sizey / 2.0])
 
         # Set up initial types
         if self.device.communicator.rank == 0:

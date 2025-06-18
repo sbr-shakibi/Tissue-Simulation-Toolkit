@@ -83,10 +83,10 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:ad0f8e1039ed71754a436a6ec6ecb0257" id="r_ad0f8e1039ed71754a436a6ec6ecb0257"><td class="memItemLeft" align="right" valign="top"><a id="ad0f8e1039ed71754a436a6ec6ecb0257" name="ad0f8e1039ed71754a436a6ec6ecb0257"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>box_size_x</b></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>sizex</b></td></tr>
 <tr class="separator:ad0f8e1039ed71754a436a6ec6ecb0257"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9e2b73be6390c25e2550c0c6849bf81" id="r_ac9e2b73be6390c25e2550c0c6849bf81"><td class="memItemLeft" align="right" valign="top"><a id="ac9e2b73be6390c25e2550c0c6849bf81" name="ac9e2b73be6390c25e2550c0c6849bf81"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>box_size_y</b></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>sizey</b></td></tr>
 <tr class="separator:ac9e2b73be6390c25e2550c0c6849bf81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44bd49d3513d47e589f64137e1d7021c" id="r_a44bd49d3513d47e589f64137e1d7021c"><td class="memItemLeft" align="right" valign="top"><a id="a44bd49d3513d47e589f64137e1d7021c" name="a44bd49d3513d47e589f64137e1d7021c"></a>
 float&#160;</td><td class="memItemRight" valign="bottom"><b>contour_length</b></td></tr>
@@ -117,10 +117,10 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>viscosity</b></td></
 <div class="textblock"><pre class="fragment">Relevant parameters for ECM evolution.
 
 Attributes:
-    box_size_x (int): Twice Lx, make sure it matches `sizex` in the .par
-            file
-    box_size_y (int): Twice Ly, make sure it matches `sizey` in the .par
-            file
+    sizex (int): Size of the x dimension of the domain same as the 
+            number of pixels in the x direction of the CPM model.
+    sizey (int):  Size of the y dimension of the domain same as the 
+            number of pixels in the y direction of the CPM model.
 
     contour_length (float): Length of fiber along the curve
 

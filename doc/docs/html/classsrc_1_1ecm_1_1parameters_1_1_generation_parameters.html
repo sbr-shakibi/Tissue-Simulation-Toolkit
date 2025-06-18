@@ -83,17 +83,11 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:ad1ad889121929b8940d4a05ca92d51b0" id="r_ad1ad889121929b8940d4a05ca92d51b0"><td class="memItemLeft" align="right" valign="top"><a id="ad1ad889121929b8940d4a05ca92d51b0" name="ad1ad889121929b8940d4a05ca92d51b0"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>box_size_x</b></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>sizex</b></td></tr>
 <tr class="separator:ad1ad889121929b8940d4a05ca92d51b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c1bf941482c8ad1e1fc17d6b6621b5a" id="r_a7c1bf941482c8ad1e1fc17d6b6621b5a"><td class="memItemLeft" align="right" valign="top"><a id="a7c1bf941482c8ad1e1fc17d6b6621b5a" name="a7c1bf941482c8ad1e1fc17d6b6621b5a"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>box_size_y</b></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>sizey</b></td></tr>
 <tr class="separator:a7c1bf941482c8ad1e1fc17d6b6621b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade7b5a3eae5673c5d288ed3e6732571e" id="r_ade7b5a3eae5673c5d288ed3e6732571e"><td class="memItemLeft" align="right" valign="top"><a id="ade7b5a3eae5673c5d288ed3e6732571e" name="ade7b5a3eae5673c5d288ed3e6732571e"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>Lx</b></td></tr>
-<tr class="separator:ade7b5a3eae5673c5d288ed3e6732571e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab04620e487fe158095002d98ef5cdc53" id="r_ab04620e487fe158095002d98ef5cdc53"><td class="memItemLeft" align="right" valign="top"><a id="ab04620e487fe158095002d98ef5cdc53" name="ab04620e487fe158095002d98ef5cdc53"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>Ly</b></td></tr>
-<tr class="separator:ab04620e487fe158095002d98ef5cdc53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9cfec297e6e31d62d3f9d2b9195cc41" id="r_ab9cfec297e6e31d62d3f9d2b9195cc41"><td class="memItemLeft" align="right" valign="top"><a id="ab9cfec297e6e31d62d3f9d2b9195cc41" name="ab9cfec297e6e31d62d3f9d2b9195cc41"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>fixed_boundary</b></td></tr>
 <tr class="separator:ab9cfec297e6e31d62d3f9d2b9195cc41"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,23 +140,21 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>crosslink_bin_size</
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><pre class="fragment">Relevant parameters for ECM generation
 
-The spatial domain of the model is [-Lx, Lx] x [-Ly, Ly], but fibers will
+The spatial domain of the model is [-sizex/2, sizex/2] x [-sizey/2, sizey/2], but fibers will
 be generated outside of this to ensure density is uniform also near the
 edges.
 
 Attributes:
-    box_size_x (int): Twice Lx, make sure it matches `sizex` in the .par
-            file
-    box_size_y (int): Twice Ly, make sure it matches `sizey` in the .par
-            file
-    Lx (float): Maximum absolute coordinate in the x direction
-    Ly (float): Maximum absolute coordinate in the y direction
+    sizex (int): Size of the x dimension of the domain same as the 
+            number of pixels in the x direction of the CPM model.
+    sizey (int): Size of the y dimension of the domain same as the 
+            number of pixels in the y direction of the CPM model.
 
     fixed_boundary (bool): Whether to fix particles outside the domain
-    bottom_fixed (bool): Whether to fix particles below the bottom (-Ly)
+    bottom_fixed (bool): Whether to fix particles below the bottom (-sizey/2)
             border of the domain. Only applies if `fixed_boundary` is
             False.
-    top_fixed (bool): Whether to fix particles above the top (+Ly)
+    top_fixed (bool): Whether to fix particles above the top (+sizey/2)
             border of the domain. Only applies if `fixed_boundary` is
             False.
 
