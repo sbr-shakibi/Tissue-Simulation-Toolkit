@@ -72,7 +72,7 @@ pyver:
 		echo "Major version too low, python must be >= $(PYVER_MAJOR_REQ).$(PYVER_MINOR_MIN)".; \
 		exit 1; \
 	fi
-	else \
+	@if [ $(PYVER_MINOR_MIN_OK) -eq 0 ]; then \
 		echo "Minor version too low, python must be >= $(PYVER_MAJOR_REQ).$(PYVER_MINOR_MIN)".; \
 		exit 1; \
 	fi
@@ -109,14 +109,16 @@ $(VENV): pyver
 	${PY} -m venv venv
 
 $(VENV_NUMPY): $(VENV)
-	. venv/bin/activate && python3 -m pip install numpy==1.25.0
+	. venv/bin/activate && python3 -m pip install numpy
 
-$(VENV_HOOMD): $(VENV) $(VENV_NUMPY)
+venv_dependencies: $(VENV)
+	. venv/bin/activate && python3 -m pip install pybind11[global]
+
+$(VENV_HOOMD): $(VENV) $(VENV_NUMPY) venv_dependencies
 	. venv/bin/activate && $(MAKE) -C $(HOOMD_DIR) install
 	@# The hoomd installer doesn't touch the file, so we do it here so we don't keep
 	@# reinstalling again and again.
-	touch $(VENV_HOOMD)
-	
+	touch ./$(VENV_HOOMD)
 $(VENV_DOCS):
 	python3 -m venv venv_docs
 	. venv_docs/bin/activate && python -m pip install -r ./doc/requirements.txt
