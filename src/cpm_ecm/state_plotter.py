@@ -120,7 +120,7 @@ class StatePlotter:
         # in parallel simulations
         unique_dic  = {}
         for i in range(len(bond_groups)):
-            unique_dic[tuple(sorted(bond_groups[i,:]))] = i
+            unique_dic[tuple(sorted(bond_groups[i,:]))] = i # type: ignore[type-var]
         bond_groups =  np.array(list(unique_dic.keys()))
 
         _logger.debug(f'bond_groups: {len(bond_groups)}')

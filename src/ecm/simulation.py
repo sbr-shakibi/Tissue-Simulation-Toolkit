@@ -363,10 +363,10 @@ class Simulation:
 
             bond_types_ids = np.unique(bonds_typeids)
             bond_types_r0 = np.array([
-                self._bond_force_cache[i][1]
+                self._bond_force_cache[i][1]    # type: ignore[index]
                 for i in bond_types_ids], dtype=np.float64)
             bond_types_k = np.array([
-                self._bond_force_cache[i][0]
+                self._bond_force_cache[i][0]    # type: ignore[index]
                 for i in bond_types_ids], dtype=np.float64)
 
             angle_csts_ids = np.concatenate(angle_cst_ids_list, dtype=np.int32)
@@ -375,10 +375,10 @@ class Simulation:
 
             angle_cst_types_ids = np.unique(angle_csts_typeids)
             angle_cst_types_t0 = np.array([
-                self._angle_cst_force_cache[i][1]
+                self._angle_cst_force_cache[i][1]   # type: ignore[index]
                 for i in angle_csts_typeids], dtype=np.float64)
             angle_cst_types_k = np.array([
-                self._angle_cst_force_cache[i][0]
+                self._angle_cst_force_cache[i][0]   # type: ignore[index]
                 for i in angle_csts_typeids], dtype=np.float64)
 
             result = ECMBoundaryState(
@@ -424,7 +424,7 @@ class Simulation:
 
         # Find all particles in the change area
         from_type_id = change_type_in_area.from_type.value
-        change_zone = {(x[0], x[1]) for x in change_type_in_area.change_area}
+        change_zone = {(x[0], x[1]) for x in change_type_in_area.change_area} # type: ignore[index]
 
         potential_changes = list()
         for i in range(snapshot.particles.typeid.shape[0]):
