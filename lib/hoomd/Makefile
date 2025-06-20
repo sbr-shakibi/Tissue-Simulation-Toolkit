@@ -24,8 +24,8 @@ $(HOOMD_LIB):
 	cd build/hoomd && cmake ../../hoomd-blue -DBUILD_TESTING=OFF $(HOOMD_BUILD_OPTIONS)
 	cmake  --build build/hoomd -j $(HOOMD_CORES)
 
-# Build with venv enabled to install dependencies correctly
-# install directory specified with --prefix=$$VIRTUAL_ENV/$(VENV_DIR)
+
+# Build with venv install directory specified with --prefix=$$VIRTUAL_ENV/$(VENV_DIR)
 # Note that $VENV_DIR is passed as a variable from the root Makefile
 .PHONY: install
 install: $(HOOMD_LIB)

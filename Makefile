@@ -103,22 +103,25 @@ python: mpi4py
 endif  # ENABLE_MPI
 
 
-# Due to dependency issues with Python3.12 and Muscle3, we create a VENV with the highest available python less than 3.12
-# Numpy also got a major update recently, and some dependencies do not work with the newer version unfortunately.
+# Check the python version
 $(VENV): pyver
 	${PY} -m venv venv
 
+# Install numpy in the virtual environment
 $(VENV_NUMPY): $(VENV)
 	. venv/bin/activate && python3 -m pip install numpy
 
+# Install other dependencies in the virtual environment
 venv_dependencies: $(VENV)
 	. venv/bin/activate && python3 -m pip install pybind11[global]
 
+# Install hoomd in the virtual environment (calls the Makefile in the lib/hoomd/ subdirectory)
 $(VENV_HOOMD): $(VENV) $(VENV_NUMPY) venv_dependencies
 	. venv/bin/activate && $(MAKE) -C $(HOOMD_DIR) install
 	@# The hoomd installer doesn't touch the file, so we do it here so we don't keep
 	@# reinstalling again and again.
 	touch ./$(VENV_HOOMD)
+
 $(VENV_DOCS):
 	python3 -m venv venv_docs
 	. venv_docs/bin/activate && python -m pip install -r ./doc/requirements.txt
