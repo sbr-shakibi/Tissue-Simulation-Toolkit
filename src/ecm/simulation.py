@@ -437,12 +437,18 @@ class Simulation:
         all_potential_changes = self._comm.allgather(potential_changes)
         potential_changes = [par_id for l in all_potential_changes for par_id in l]
 
+
+        # TODO: print a warning message that gets picked up by muscle3
+        
         if len(potential_changes) < change_type_in_area.num_particles:
-            raise RuntimeError(
+
+            print(
                     'There are not enough particles in the adhesion zone to'
                     ' create the requested number of adhesions. Please increase'
                     ' adhesion_zone_radius, decrease num_initial_adhesions, or'
                     ' provide an ECM with higher particle density.')
+
+            return()
 
         # Randomly select the required number of particles
         selected_changes = list()
