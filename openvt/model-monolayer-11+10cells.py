@@ -114,12 +114,6 @@ def main():
             track_left_cell_per_rep = tracks.loc[(tracks["replica"] == rep) & (tracks["cell id"]==6)]
             track_right_cell_per_rep = tracks.loc[(tracks["replica"] == rep) & (tracks["cell id"]==16)]
             inner_width_per_rep = track_right_cell_per_rep['com_1 (px)'].array-track_left_cell_per_rep['com_1 (px)'].array
-            print(inner_width_per_rep)
-            # for time in tracks['time (MCS)'].unique():
-            #     frame_data = tracks_per_rep.loc[tracks_per_rep['time (MCS)'] == time]['com_1 (px)']
-            #     print(frame_data)
-            #     inner_width_per_rep.append(frame_data.loc[frame_data['cell id']==16].array -\
-            #                                frame_data.loc[frame_data['cell id']==6].array)
             inner_width_df['Inner width rep' + str(rep)+ ' (CD)'] = np.array(inner_width_per_rep)/CD
 
             # Plotting the inner width for ech replica
