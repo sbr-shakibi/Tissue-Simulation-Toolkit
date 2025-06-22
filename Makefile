@@ -5,7 +5,7 @@ CATCH2_DIR = lib/Catch2
 HOOMD_DIR = lib/hoomd
 MUSCLE3_DIR = lib/muscle3
 TST_DIR   = src
-QMAKE     = /Applications/Qt/6.6.1/macos/bin/qmake
+QMAKE     = qmake
 # Edit the above line as necessary, e.g., as follows:
 #QMAKE    = /Applications/Qt5/6.6.1/macos/bin/qmake
 # or
