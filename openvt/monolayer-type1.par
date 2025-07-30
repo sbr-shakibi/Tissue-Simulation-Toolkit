@@ -1,0 +1,34 @@
+# Cellular Potts parameters
+T = 1
+target_area = 50
+lambda = 1
+target_perimeter = 1
+lambda_perimeter = 1
+
+# to be removed?
+lambda2 = 0                 
+
+Jtable = J0.dat
+
+# to be removed?
+conn_diss = 0               
+# to be removed?
+chemotaxis = 0              
+
+periodic_boundaries = true
+
+# initial conditions
+initial_configuration_file = ./monolayer-11cells.json
+sizex = 1601
+sizey = 1601
+
+
+mcs = 5000                   
+rseed = -1
+n_init_cells = 1
+
+# output
+storage_stride = 10
+graphics = true
+store = true
+datadir = ./monolayer-type1/

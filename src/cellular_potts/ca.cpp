@@ -2621,6 +2621,114 @@ void CellularPotts::GrowAndDivideCells(int growth_rate) {
   DivideCells(which_cells);
 }
 
+void CellularPotts::GrowCells(int cell_type,int growth_rate) {
+  // TODO: cell_type can be changed into a vector containing all the cell types that should grow
+  // growth_rate can be changed into a vector containing growth rates of different cell types.
+  vector<Cell>::iterator c = cell->begin();
+  ++c;
+  for (; c != cell->end(); c++) {
+    // grow specific cell type or all cells
+    if (c->getTau() == cell_type || cell_type == 0) {
+      c->SetTargetArea(c->TargetArea() + growth_rate);
+    }
+  }
+}
+
+void CellularPotts::GrowCells(int cell_type,int growth_rate,double size_threshold) {
+  // TODO: cell_type can be changed into a vector containing all the cell types that should grow
+  // growth_rate and size_threshold can be changed into vectors containing growth rates and thresholds of different cell types.
+  vector<Cell>::iterator c = cell->begin();
+  ++c;
+  for (; c != cell->end(); c++) {
+    // grow specific cell type or all cells
+    if (c->getTau() == cell_type || cell_type == 0) {
+      if (c->Area() >= size_threshold) {
+        // only grow if the cell is larger than the threshold
+        c->SetTargetArea(c->TargetArea() + growth_rate);
+      }
+    }
+  }
+}
+
+std::unordered_map<int, int> CellularPotts::MembraneMediumEdgeCount() {
+  std::unordered_map<int, int> MediumEdgeCount;
+  auto membrane_pixels = GetCellMembranePixels();
+  for (const auto &pixel : membrane_pixels) {
+    int x = pixel.x;
+    int y = pixel.y;
+    int cell_type = sigma[x][y];
+    MediumEdgeCount[cell_type] = 0; // initialize the free fraction for this cell type
+    for (int i = 1; i <= n_nb; i++) {
+      int xp2, yp2;
+      xp2 = x + nx[i];
+      yp2 = y + ny[i];
+
+      xp2 = FixPeriodic(xp2,sizex);
+      yp2 = FixPeriodic(yp2,sizey);
+
+      // did we find a medium in the neighbourhood?
+      if (sigma[xp2][yp2] == 0) { // medium state
+        // increment the free fraction for this cell type
+        MediumEdgeCount[cell_type]++;
+        break; // to avoid double conunting
+      }
+    }
+  }
+  return MediumEdgeCount;
+}
+
+void CellularPotts::GrowCells(int cell_type,int growth_rate,double size_threshold,double neighbour_threshold) {
+  // TODO: cell_type can be changed into a vector containing all the cell types that should grow
+  // growth_rate and size_threshold can be changed into vectors containing growth rates and thresholds of different cell types.
+  vector<Cell>::iterator c = cell->begin();
+  ++c;
+  std::unordered_map<int, int> MediumEdgeCount;
+
+  // This is an expensive operation, so we only do it if neighbour_threshold > 0
+  if (neighbour_threshold > 0){
+    MediumEdgeCount = MembraneMediumEdgeCount(); // update the MediumEdgeCount
+  }
+
+  for (; c != cell->end(); c++) {
+    // grow specific cell type or all cells
+    if (c->getTau() == cell_type || cell_type == 0) {
+      // check if size is larger than the threshold
+      if (c->Area() >= size_threshold) {
+        if (neighbour_threshold==0) {
+          // This is to avoid expensive operations 
+          c->SetTargetArea(c->TargetArea() + growth_rate);
+        } else {
+          // only grow if the cell is larger than the threshold and has enough free neighbours
+          if (MediumEdgeCount[c->Sigma()] >= c->Perimeter() * neighbour_threshold) {
+            c->SetTargetArea(c->TargetArea() + growth_rate);
+          }
+        }
+      }
+    }
+  }
+}
+
+void CellularPotts::DivideCellsByArea(int cell_type,int area_theshold) {
+  // TODO: cell_type can be changed into a vector containing all the cell types that can divide
+  // area_theshold can be changed into a vector containing area_thresholds for different cell types.
+  vector<Cell>::iterator c = cell->begin();
+  ++c;
+  vector<bool> which_cells(cell->size());
+
+  for (; c != cell->end(); c++) {
+    if (c->getTau() == cell_type || cell_type == 0) {
+      if (c->Area() >= area_theshold) {
+        which_cells[c->Sigma()] = true;
+      } else {
+        which_cells[c->Sigma()] = false;
+      }
+    } else {
+      which_cells[c->Sigma()] = false;
+    }
+  }
+  DivideCells(which_cells);
+}
+
 double CellularPotts::DrawConvexHull(Graphics *g, int color) {
   // Draw the convex hull of the cells
   // using Andrew's Monotone Chain Algorithm (see hull.cpp)

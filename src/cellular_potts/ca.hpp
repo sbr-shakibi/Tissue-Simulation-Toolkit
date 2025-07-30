@@ -405,6 +405,31 @@ public:
   */
   void GrowAndDivideCells(int growth_rate);
 
+  /*! \brief Cells of specific type grow with the "growth_rate"
+  \param cell_type: the cell type to grow. A value of zero would result in growing of
+  all the cells.
+  \param growth_rate: the growing rate in pixels for each time GrowCells is called.
+  */
+  void GrowCells(int cell_type,int growth_rate);
+
+  /*! \brief Cells of specific type grow with the "growth_rate"
+  \param cell_type: the cell type to grow. A value of zero would result in growing of
+  all the cells.
+  \param growth_rate: the growing rate in pixels for each time GrowCells is called.
+  \param size_threshold: the size threshold for growth.
+  */
+
+  void GrowCells(int cell_type,int growth_rate,double size_threshold);
+  void GrowCells(int cell_type,int growth_rate,double size_threshold,double neighbour_threshold);
+
+  /*! \brief Cells of specific type divide if their area is larger than the
+  area_threshold.
+  \param cell_type: the cell type to divide. A value of zero would result in
+  dividing of all the cells.
+  \param area_threshold: the area threshold for division.
+  */
+  void DivideCellsByArea(int cell_type,int area_theshold);
+
   inline Cell &getCell(int c) { return (*cell)[c]; }
 
   inline vector<Cell> *getCellArray() { return cell; }
@@ -434,6 +459,12 @@ public:
   /* Find the membrane pixels
   */
   std::vector<PixelPos> GetCellMembranePixels();
+
+  /*! \brief Get the number of membrane pixels of each cell that is in contact
+    with the medium.
+    \return A map with cell sigma values as key and number of membrane pixels in contact with medium as value.
+   */
+  std::unordered_map<int, int> MembraneMediumEdgeCount();
 
   /*! \brief Measure the initial cell perimeters
     Measure cell perimeters of all initial size and assign them to the cells
