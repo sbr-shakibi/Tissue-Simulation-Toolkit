@@ -95,16 +95,16 @@ def main():
         ax.fill_between(width_df['Normalized time (T)'], mean_data-std_data,mean_data+std_data,alpha=0.5)
         ax.plot(width_df['Normalized time (T)'],mean_data)
         ax.plot([1,1],[5,10],'k--',linewidth=.7)
-        ax.plot([0,5],[9,9],'k--',linewidth=.7)
-        ax.plot([0,5],[10,10],'k--',linewidth=.7)
-        ax.set_xlim((0,5))
+        ax.plot([0,10],[9,9],'k--',linewidth=.7)
+        ax.plot([0,10],[10,10],'k--',linewidth=.7)
+        ax.set_xlim((0,10))
         ax.set_ylim((5,10.25))
         ax.set_xlabel('Time (T)')
         ax.set_ylabel('Tissue width (CD)')
 
         # Saving to a csv file
         width_df.to_csv(output_path+ "/" + "width.csv",float_format='%.7E')
-        ax.set_xlim((0,5))
+        ax.set_xlim((0,10))
         plt.show()
 
 if __name__ == "__main__":

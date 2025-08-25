@@ -25,7 +25,7 @@ sizey = 7
 relaxation = 100            
 
 # relaxation + 5xT (with T = 86 MCS)
-mcs = 530                   
+mcs = 960                   
 rseed = -1
 n_init_cells = 21
 
