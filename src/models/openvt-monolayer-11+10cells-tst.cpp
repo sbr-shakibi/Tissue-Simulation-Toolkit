@@ -62,7 +62,7 @@ void write_cell_positions(int i, Dish* dish, const Parameter& par, const std::st
   } else if (i % output_per == 0) {
     out.open(filename, std::ios::app);
   }
-  info->WriteCOMsTorus(dish,out);
+  info->WriteCOMsTorus(out,",");
 }
 
 INIT {

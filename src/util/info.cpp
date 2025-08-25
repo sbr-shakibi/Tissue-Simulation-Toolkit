@@ -230,36 +230,23 @@ void Info::set_unPaused() {
 }
 
 // Write the center of mass, area and perimeter
-void Info::WriteCOMsTorus(Dish* dish, std::ostream &out, const std::string& delimiter) {
-  int cell_number = par.n_init_cells;
+void Info::WriteCOMsTorus(std::ostream &out, const std::string& delimiter) {
+  int cell_number = dish->CountCells();
   static int t;
   for (int s = 1; s < cell_number + 1; s++) {
     double com_x = dish->getCell(s).getCenterX();
     double com_y = dish->getCell(s).getCenterY();
     int n = dish->getCell(s).Area();
     int p = dish->getCell(s).Perimeter();
+    // int a = dish->getCell(s).GetAdhesiveArea();
     out << t << delimiter << s << delimiter << com_x << delimiter << com_y << delimiter << n << delimiter << p << "\n";
   }
   t++;
 }
 
-void Info::WriteCOMsTorus(Dish* dish, std::ostream &out) {
-  WriteCOMsTorus(dish, out, ",");
-}
-
 // Write the center of mass to "out" based on the internal COMs
 void Info::WriteCOMsTorus(std::ostream &out) {
-  int cell_number = par.n_init_cells;
-  static int t;
-  for (int s = 1; s < cell_number + 1; s++) {
-    double com_x = dish->getCell(s).sum_x / (double)dish->getCell(s).area;
-    double com_y = dish->getCell(s).sum_y / (double)dish->getCell(s).area;
-    int n = dish->getCell(s).Area();
-    int a = dish->getCell(s).GetAdhesiveArea();
-    out << t << " " << s << " " << com_x << " " << com_y << " " << n << " " << a
-        << "\n";
-  }
-  t++;
+  WriteCOMsTorus(out, " ");
 }
 
 void Info::WriteAdhesionsLocationsPerCell(int cell_id, int field_id,
