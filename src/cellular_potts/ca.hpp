@@ -460,6 +460,7 @@ public:
   /* Find the membrane pixels
   */
   std::vector<PixelPos> GetCellMembranePixels();
+  std::vector<PixelPos> GetCellMembranePixels2();
 
   /*! \brief Get the number of membrane pixels of each cell that is in contact
     with the medium.
@@ -471,6 +472,8 @@ public:
     Measure cell perimeters of all initial size and assign them to the cells
   */
   void MeasureCellPerimeters();
+
+  void ReportCellData();
 
   /*! \brief Run amoebaemove while only accepting negative delta H
    */

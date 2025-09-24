@@ -1951,6 +1951,27 @@ void CellularPotts::MeasureCellSize(Cell &c) {
   }
 }
 
+std::vector<PixelPos> CellularPotts::GetCellMembranePixels2() {
+  std::vector<PixelPos> pixels;
+  int loop = static_cast<float>(sizeedgelist) / static_cast<float>(n_nb);
+  std::cerr << "loop = " << loop << "\n";
+  for (int i = 0; i < loop; i++) {
+    // find the corresponding edge
+    int targetedge = orderedgelist[i];
+    // find the lattice site corresponding to this edge
+    int targetsite = targetedge / n_nb;
+
+    // find the x and y coordinate corresponding to the target site
+    int x = targetsite % (sizex - 2) + 1;
+    int y = targetsite / (sizex - 2) + 1;
+
+    PixelPos pixel(x, y);
+    pixels.push_back(pixel);
+  }
+  return pixels;
+}
+
+
 std::vector<PixelPos> CellularPotts::GetCellMembranePixels() {
   std::vector<PixelPos> pixels;
   for (int x = 1; x < sizex - 1; x++) {
@@ -2001,11 +2022,32 @@ void CellularPotts::MeasureCellPerimeters() {
             // add to the perimeter of the cell
             (*cell)[sigma[x][y]].IncrementTargetPerimeter();
             (*cell)[sigma[x][y]].IncrementPerimeter();
+            break; // to avoid double conunting
           }
         }
       }
     }
   }
+}
+
+void CellularPotts::ReportCellData() {
+  std::cout << "Cell Data at time " << thetime << "\n";
+  std::cout << "Cell\tSigma\tArea\tTargetArea\tPerimeter\tTargetPerimeter\n";
+  for (vector<Cell>::iterator c = cell->begin(); c != cell->end(); c++) {
+    if (c->sigma == 0)
+      continue;
+    std::cout << c->sigma << "\t" << c->Area() << "\t" << c->TargetArea()
+              << "\t" << c->Perimeter() << "\t" << c->TargetPerimeter()
+              << "\n";
+    std::cout << "Pixels: ";
+    for (int x = 1; x < sizex - 1; x++) {
+      for (int y = 1; y < sizey - 1; y++) {
+        if (sigma[x][y] == c->sigma) {
+          std::cout << "[" << x << "\t" << y << "]\n";
+        }
+      }
+    }
+    }
 }
 
 Dir *CellularPotts::FindCellDirections(void) const {
