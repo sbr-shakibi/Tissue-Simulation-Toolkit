@@ -46,12 +46,32 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
 using namespace std;
 
+// Function to write cell positions; pass all required variables as parameters
+void write_cell_positions(int i, const Parameter& par, const std::string& output_name, int output_per, std::ofstream* cellpos_stream,Info *info) {
+  std::string filename = par.datadir + "/" + output_name;
+  std::ofstream out;
+  out << std::scientific << std::setprecision(6);  // Adjust precision as needed
+  if (i == 0) {
+    std::cout << "Opening cell position" << std::endl;
+    out.open(filename);
+    out << "time (MCS),cell id,com_1 (px),com_2 (px),area (px^2),perimeter (px)" << std::endl;
+
+    if (!out) {
+      std::cerr << "Failed to open file!" << std::endl;
+    }
+  } else if (i % output_per == 0) {
+    out.open(filename, std::ios::app);
+  }
+  info->WriteCOMsTorus(out, ",");
+}
+
 INIT {
   try {
     // Read initial configuration
 
     CPM->GrowInCells(par.n_init_cells, par.size_init_cells, par.subfield);
     CPM->ConstructInitCells(*this);
+    CPM->MeasureCellPerimeters();
 
     // int cell_size=5;
     // int x_pos;
@@ -90,23 +110,24 @@ TIMESTEP {
         io = new IO(*dish);
     }
 
-    double alpha = 0.5;
-    int growth_rate = 1;
-    int A0 = 50;
-    double beta = 0.95;
-    double gamma = 0.95;
-    int area_change_frequency = static_cast<int>(round(1/alpha));
-    if (i % area_change_frequency){
-      dish->CPM->GrowCells(0, 1,beta * A0,gamma);
-      dish->CPM->DivideCellsByArea(0,2*A0);
-    }
-
+    // double alpha = 3.14159265/10.0;
+    // int A0 = 50;
+    // alpha = alpha * DSQR(sqrt(static_cast<double>(A0)/3.14159265)) / 86.0; // unit conversion
+    // std::cerr << "alpha = " << alpha << std::endl;
+    // double beta = 0.0;
+    // double gamma = 0.01;
+    // std::cerr << "time= " << i << std::endl;
+    dish->CPM->ReportCellData();
+    dish->CPM->GrowCells(0, par.area_growth_rate,par.CIP_area_ratio * par.target_area,par.CIP_neighbour_ratio);
+    dish->CPM->DivideCellsByArea(0,par.CIP_division_size_ratio*par.target_area);
 
     if (par.graphics && !(i % par.storage_stride)) {
       PROFILE(all_plots, plotter->Plot();)
       info->Menu();
       dish->CPM->FindBoundingBox(); // old: Setboundingbox
     }
+
+    write_cell_positions(i,par,"tst.csv",1,cellpos_stream,info);
 
     if (i == 0 && par.pause_on_start) {
       info->set_Paused();

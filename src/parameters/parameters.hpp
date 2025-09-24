@@ -115,6 +115,11 @@ PARAMETER(int, neighbours, 2,
           " energy. 0: no neighbours, 1: 4 orthogonal neighbours (von Neumann),"
           "  2: 8 direct neighbours (Moore), 3: 5x5 block minus the corners.")
 
+PARAMETER(double, area_growth_rate, 0.0, "Growth rate for cell area in px^2/MCS")
+PARAMETER(double, CIP_area_ratio, 0.0, "The ratio of cell area to target area below which cells do not grow")
+PARAMETER(double, CIP_neighbour_ratio, 0.0, "The ratio of cell neibours in contact with medium to perimeter below which cells do not grow")
+PARAMETER(double, CIP_division_size_ratio, 0.0, "The ratio of cell area to target area above which cells divide")
+
 SECTION("Actin model")
 
 PARAMETER(int, ref_adhesive_area, 100,
