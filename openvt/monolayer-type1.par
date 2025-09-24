@@ -22,8 +22,13 @@ initial_configuration_file = ./monolayer-11cells.json
 sizex = 1601
 sizey = 1601
 
+# area_growth_rate = pi *[(SQRT(target_area)/PI())^2/T] with (T = 86) []: unit conversion 
+area_growth_rate = 0.185063887
+CIP_area_ratio = 0.0
+CIP_neighbour_ratio = 0.0
+CIP_division_size_ratio = 2.0
 
-mcs = 5000                   
+mcs = 100000                   
 rseed = -1
 n_init_cells = 1
 
