@@ -227,7 +227,7 @@ public:
   inline int Area() const { return area; }
 
   //! Return Cell's target area.
-  inline int TargetArea() const { return target_area; }
+  inline double TargetArea() const { return target_area; }
 
   // ! Return Cell's perimeter
   inline int Perimeter() { return perimeter; }
@@ -285,6 +285,10 @@ public:
 
   //! Sets the target area of the cell.
   inline int SetTargetArea(const int new_area) {
+    return target_area = static_cast<double>(new_area);
+  }
+
+  inline int SetTargetArea(const double new_area) {
     return target_area = new_area;
   }
 
@@ -292,9 +296,9 @@ public:
   inline void Apoptose() { alive = false; }
 
   //! Decrement the cell's target area by one unit.
-  inline int IncrementTargetArea() { return ++target_area; }
+  inline double IncrementTargetArea() { return ++target_area; }
   //! Increment the cell's target area by one unit.
-  inline int DecrementTargetArea() { return --target_area; }
+  inline double DecrementTargetArea() { return --target_area; }
 
   //! Cell lineage tracking: get the cell's parent
   inline int Mother(void) const { return mother; }
@@ -561,7 +565,7 @@ private:
 
   This is useful when reading an initial condition from an image.
   */
-  inline int SetAreaToTarget(void) { return area = target_area; }
+  inline int SetAreaToTarget(void) { return area = static_cast<int>(target_area); }
 
   //! Called whenever a cell is constructed, from constructor
   void ConstructorBody(int settau = 1);
@@ -604,7 +608,7 @@ protected:
   int colour_of_birth;
 
   int area;
-  int target_area;
+  double target_area;
   int adhesive_area;
   int ref_adhesive_area;
   int growth_threshold;

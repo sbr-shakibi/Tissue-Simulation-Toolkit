@@ -2622,6 +2622,10 @@ void CellularPotts::GrowAndDivideCells(int growth_rate) {
 }
 
 void CellularPotts::GrowCells(int cell_type,int growth_rate) {
+  GrowCells(cell_type,static_cast<double>(growth_rate));
+}
+
+void CellularPotts::GrowCells(int cell_type,double growth_rate) {
   // TODO: cell_type can be changed into a vector containing all the cell types that should grow
   // growth_rate can be changed into a vector containing growth rates of different cell types.
   vector<Cell>::iterator c = cell->begin();
@@ -2634,7 +2638,7 @@ void CellularPotts::GrowCells(int cell_type,int growth_rate) {
   }
 }
 
-void CellularPotts::GrowCells(int cell_type,int growth_rate,double size_threshold) {
+void CellularPotts::GrowCells(int cell_type,double growth_rate,double size_threshold) {
   // TODO: cell_type can be changed into a vector containing all the cell types that should grow
   // growth_rate and size_threshold can be changed into vectors containing growth rates and thresholds of different cell types.
   vector<Cell>::iterator c = cell->begin();
@@ -2677,7 +2681,7 @@ std::unordered_map<int, int> CellularPotts::MembraneMediumEdgeCount() {
   return MediumEdgeCount;
 }
 
-void CellularPotts::GrowCells(int cell_type,int growth_rate,double size_threshold,double neighbour_threshold) {
+void CellularPotts::GrowCells(int cell_type,double growth_rate,double size_threshold,double neighbour_threshold) {
   // TODO: cell_type can be changed into a vector containing all the cell types that should grow
   // growth_rate and size_threshold can be changed into vectors containing growth rates and thresholds of different cell types.
   vector<Cell>::iterator c = cell->begin();

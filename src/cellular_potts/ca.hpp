@@ -411,6 +411,7 @@ public:
   \param growth_rate: the growing rate in pixels for each time GrowCells is called.
   */
   void GrowCells(int cell_type,int growth_rate);
+  void GrowCells(int cell_type,double growth_rate);
 
   /*! \brief Cells of specific type grow with the "growth_rate"
   \param cell_type: the cell type to grow. A value of zero would result in growing of
@@ -419,8 +420,8 @@ public:
   \param size_threshold: the size threshold for growth.
   */
 
-  void GrowCells(int cell_type,int growth_rate,double size_threshold);
-  void GrowCells(int cell_type,int growth_rate,double size_threshold,double neighbour_threshold);
+  void GrowCells(int cell_type,double growth_rate,double size_threshold);
+  void GrowCells(int cell_type,double growth_rate,double size_threshold,double neighbour_threshold);
 
   /*! \brief Cells of specific type divide if their area is larger than the
   area_threshold.

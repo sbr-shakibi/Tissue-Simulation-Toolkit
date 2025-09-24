@@ -99,7 +99,7 @@ PARAMETER(double, T, 50.0,
 PARAMETER(double, lambda, 50.0, "Energy parameter for copy or flip attempt")
 PARAMETER(double, lambda2, 5.0, "Energy parameter for copy or flip attempt")
 
-PARAMETER(int, target_area, 100, "Target area for all cells")
+PARAMETER(double, target_area, 100, "Target area for all cells")
 PARAMETER(int, target_perimeter, 0, "Target perimeter length for all cells")
 PARAMETER(int, target_length, 60, "Target cell length for all cells")
 
