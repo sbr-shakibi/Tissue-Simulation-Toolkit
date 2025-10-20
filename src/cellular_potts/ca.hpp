@@ -523,6 +523,8 @@ public:
   /// @return Fixed coordinate with respect to the periodic boundaries.
   int FixPeriodic(int CoordP, int SizeCoord);
 
+  vector<array<int, 3>> CellPerimeterContact();
+
 private:
   /*! \brief Standard deltaH with are constraint, length constraint and
    * chemotaxis

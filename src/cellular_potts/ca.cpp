@@ -283,6 +283,33 @@ int CellularPotts::FixPeriodic(int CoordP,int SizeCoord){
   return CoordP;
 }
 
+vector<array<int, 3>> CellularPotts::CellPerimeterContact() {
+  vector<array<int, 3>> perimeter_contact;
+  // perimeter_contact[cell_id][0] = cell_id
+  // perimeter_contact[cell_id][1] = perimeter length
+  // perimeter_contact[cell_id][2] = contact with medium
+
+  perimeter_contact.resize(cell->size());
+  for (int i = 0; i < cell->size(); i++) {
+    perimeter_contact[i] = {static_cast<int>(i), 0, 0};
+  }
+
+  auto membrane_data= GetCellMembranePixels();
+  for (auto &pixel_info : membrane_data) {
+    int cell_id = sigma[pixel_info.x][pixel_info.y];
+    perimeter_contact[cell_id][1] += 1;
+    for (int n = 1; n <= n_nb; n++) {
+      int xn = FixPeriodic(pixel_info.x + nx[n], sizex);
+      int yn = FixPeriodic(pixel_info.y + ny[n], sizey);
+      if (sigma[xn][yn] == 0){
+        perimeter_contact[cell_id][2] += 1;
+        break; // Count each membrane pixel only once for contact with medium
+      }
+    }
+  }
+  return perimeter_contact;
+}
+
 int CellularPotts::IsingDeltaH(int x, int y, PDE *PDEfield) {
   int DH = 0, H_before = 0, H_after = 0;
   int i, sxy;
