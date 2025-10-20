@@ -592,7 +592,6 @@ int CellularPotts::DeltaH(int x, int y, int xp, int yp, PDE *PDEfield,
        }
     DH += DH_perimeter;
 
-
   /* Chemotaxis */
   if (PDEfield && (par.vecadherinknockout || (sxyp == 0 || sxy == 0))) {
     // copying from (xp, yp) into (x,y)
@@ -1722,7 +1721,8 @@ int CellularPotts::GetNewPerimeterIfXYWereAdded(int sxyp, int x, int y) {
      n_nb=nbh_level[par.neighbours];
   */
   int perim = (*cell)[sxyp].Perimeter();
-
+  // Increase of perimeter due to addition of x,y
+  perim++;
   /* the cell with sigma sxyp wants to extend by adding lattice site (x, y).
  This means that the sxyp neighbours of (x,y) will not be borders anymore,so
  they can be subtracted from the perimeter of sxyp.
@@ -1734,21 +1734,27 @@ int CellularPotts::GetNewPerimeterIfXYWereAdded(int sxyp, int x, int y) {
     xp2 = x + nx[i];
     yp2 = y + ny[i];
 
-    if (par.periodic_boundaries) {
+    xp2 = FixPeriodic(xp2,sizex);
+    yp2 = FixPeriodic(yp2,sizey);
 
-      if (xp2 <= 0)
-        xp2 = sizex - 2 + xp2;
-      if (yp2 <= 0)
-        yp2 = sizey - 2 + yp2;
-      if (xp2 >= sizex - 1)
-        xp2 = xp2 - sizex + 2;
-      if (yp2 >= sizey - 1)
-        yp2 = yp2 - sizey + 2;
-    }
     if (sigma[xp2][yp2] == sxyp) {
-      perim--;
-    } else {
-      perim++;
+
+      // looping through neighbours of xp2,yp2
+        for (int j = 1; j <= n_nb; j++){
+          int xp3, yp3;
+          xp3 = xp2 + nx[j];
+          yp3 = yp2 + ny[j];
+          xp3 = FixPeriodic(xp3,sizex);
+          yp3 = FixPeriodic(yp3,sizey);
+
+          // Jump to the next loop if you see pixels of other cells except for x,y pixel
+          if ((sigma[xp3][yp3] != sxyp) && (xp3 != x && yp3 != y)){
+            break;
+          }
+	  if (j == n_nb){
+	    perim--; // The pixel xp2,yp2 will be removed from membrane
+	  }
+	}
     }
   }
   return perim;
@@ -1762,29 +1768,42 @@ int CellularPotts::GetNewPerimeterIfXYWereRemoved(int sxy, int x, int y) {
   int perim = (*cell)[sxy].Perimeter();
   /* the cell with sigma sxy loses xy
    */
+  // Reduction of perimeter due to deletion of x,y
+
+  perim--;
   for (int i = 1; i <= n_nb; i++) {
 
     int xp2, yp2;
     xp2 = x + nx[i];
     yp2 = y + ny[i];
-    if (par.periodic_boundaries) {
 
-      if (xp2 <= 0)
-        xp2 = sizex - 2 + xp2;
-      if (yp2 <= 0)
-        yp2 = sizey - 2 + yp2;
-      if (xp2 >= sizex - 1)
-        xp2 = xp2 - sizex + 2;
-      if (yp2 >= sizey - 1)
-        yp2 = yp2 - sizey + 2;
-    }
-    if (sigma[xp2][yp2] == sxy) {
-      perim++;
-    } else {
-      perim--;
+    xp2 = FixPeriodic(xp2,sizex);
+    yp2 = FixPeriodic(yp2,sizey);
+
+      if (sigma[xp2][yp2] == sxy){
+	bool membrane_pixel2 = false;
+
+        // looping through neighbours of xp2,yp2
+        for (int j = 1; j <= n_nb; j++){
+          int xp3, yp3;
+          xp3 = xp2 + nx[j];
+          yp3 = yp2 + ny[j];
+          xp3 = FixPeriodic(xp3,sizex);
+          yp3 = FixPeriodic(yp3,sizey);
+
+          // Jump to the next loop if you see pixels of other cells
+          if (sigma[xp3][yp3] != sxy){
+	    membrane_pixel2 = true;
+            break;
+          }
+	}
+      if (!membrane_pixel2){
+	  // The pixel xp2,yp2 will be a new membrane pixel!
+          perim++;
+      }
     }
   }
-  return perim;
+return perim;
 }
 
 int CellularPotts::GetActLevel(int x, int y) {
@@ -2007,20 +2026,13 @@ void CellularPotts::MeasureCellPerimeters() {
           int xp2, yp2;
           xp2 = x + nx[i];
           yp2 = y + ny[i];
-          if (par.periodic_boundaries) {
-            if (xp2 <= 0)
-              xp2 = sizex - 2 + xp2;
-            if (yp2 <= 0)
-              yp2 = sizey - 2 + yp2;
-            if (xp2 >= sizex - 1)
-              xp2 = xp2 - sizex + 2;
-            if (yp2 >= sizey - 1)
-              yp2 = yp2 - sizey + 2;
-          }
+
+          xp2 = FixPeriodic(xp2,sizex);
+          yp2 = FixPeriodic(yp2,sizey);
+
           // did we find a border?
           if (sigma[xp2][yp2] != sigma[x][y]) {
             // add to the perimeter of the cell
-            (*cell)[sigma[x][y]].IncrementTargetPerimeter();
             (*cell)[sigma[x][y]].IncrementPerimeter();
             break; // to avoid double conunting
           }
