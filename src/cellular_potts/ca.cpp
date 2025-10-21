@@ -1738,6 +1738,7 @@ int CellularPotts::GetNewPerimeterIfXYWereAdded(int sxyp, int x, int y) {
     yp2 = FixPeriodic(yp2,sizey);
 
     if (sigma[xp2][yp2] == sxyp) {
+      bool interior_pixel2 = true;
 
       // looping through neighbours of xp2,yp2
         for (int j = 1; j <= n_nb; j++){
@@ -1747,16 +1748,18 @@ int CellularPotts::GetNewPerimeterIfXYWereAdded(int sxyp, int x, int y) {
           xp3 = FixPeriodic(xp3,sizex);
           yp3 = FixPeriodic(yp3,sizey);
 
-          // Jump to the next loop if you see pixels of other cells except for x,y pixel
-          if ((sigma[xp3][yp3] != sxyp) && (xp3 != x && yp3 != y)){
+          // Jump to the next loop if you see pixels of other cells except for the x,y pixel
+          if ((sigma[xp3][yp3] != sxyp) && (xp3 != x || yp3 != y)){
+            interior_pixel2 = false;
             break;
           }
-	  if (j == n_nb){
+      	}
+      if (interior_pixel2){
 	    perim--; // The pixel xp2,yp2 will be removed from membrane
 	  }
 	}
     }
-  }
+
   return perim;
 }
 
