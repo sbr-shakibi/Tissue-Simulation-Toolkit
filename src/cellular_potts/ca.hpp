@@ -473,6 +473,8 @@ public:
   */
   void MeasureCellPerimeters();
 
+  void SetupCellMembranePixels();
+
   void ReportCellData();
 
   /*! \brief Run amoebaemove while only accepting negative delta H
