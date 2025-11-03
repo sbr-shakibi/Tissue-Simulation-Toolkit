@@ -28,6 +28,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 #include <iostream>
 #include <math.h>
 #include "MovementTracker.hpp"
+#include <array>
 
 extern Parameter par;
 class Dish;
@@ -359,6 +360,12 @@ public:
   */
   void MeasureCellSize(Cell &c);
 
+  void AddPixelToMembrane(std::array<int, 2> pix);
+
+  void RemovePixelFromMembrane(std::array<int, 2> pix);
+
+  std::vector<std::array<int, 2>>& GetMembranePixels();
+
   void setArea(int n_area) { area = n_area; }
 
   //! Increments the cell's actual adhesive area by 1 unit.
@@ -640,6 +647,7 @@ protected:
   static int sizex;
   static int sizey;
   double border;
+  std::vector<std::array<int, 2>> membrane_pixels;
 
     MovementTracker *mov_tracker;
   const Dish *owner; // pointer to owner of cell

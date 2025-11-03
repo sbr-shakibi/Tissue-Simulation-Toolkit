@@ -139,6 +139,7 @@ void Cell::ConstructorBody(int settau) {
   sum_cos_x = 0.;
   sum_sin_y = 0.;
   sum_cos_y = 0.;
+  std::vector<std::array<int, 2>> membrane_pixels = std::vector<std::array<int, 2>>();
 
   //  growth_threshold=par.dthres;
   growth_threshold = 0;
@@ -186,6 +187,21 @@ void Cell::ReadStaticJTable(std::string const &fname) {
       J[j][i] = J[i][j];
     }
   }
+}
+
+void Cell::AddPixelToMembrane(std::array<int, 2> pix) {
+    membrane_pixels.push_back(pix);
+}
+
+void Cell::RemovePixelFromMembrane(std::array<int, 2> pix) {
+    auto it = std::find(membrane_pixels.begin(), membrane_pixels.end(), pix);
+    if (it != membrane_pixels.end()) {
+        membrane_pixels.erase(it);
+    }
+}
+
+std::vector<std::array<int,2>>& Cell::GetMembranePixels() {
+    return membrane_pixels;
 }
 
 int Cell::EnergyDifference(const Cell &cell2) const {
