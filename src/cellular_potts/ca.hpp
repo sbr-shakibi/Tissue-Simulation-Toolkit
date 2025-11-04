@@ -478,6 +478,8 @@ public:
 
   void SetupCellMembranePixels();
 
+  bool isMembranePixel(int x, int y);
+
   void ReportCellData();
 
   /*! \brief Run amoebaemove while only accepting negative delta H

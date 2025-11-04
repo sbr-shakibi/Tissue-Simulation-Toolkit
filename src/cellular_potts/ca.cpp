@@ -2394,6 +2394,20 @@ void CellularPotts::DivideCells(vector<bool> which_cells) {
 
   if (divflags)
     free(divflags);
+
+bool CellularPotts::isMembranePixel(int x, int y){
+  // Check if the pixel at (x,y) is a membrane pixel
+  int sigma_xy = sigma[x][y];
+  for (int i = 1; i <= n_nb; i++) {
+    int xp2 = FixPeriodic(x + nx[i], sizex);
+    int yp2 = FixPeriodic(y + ny[i], sizey);
+    if (sigma[xp2][yp2] != sigma_xy) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }
 
 /**! Fill the plane with initial cells
