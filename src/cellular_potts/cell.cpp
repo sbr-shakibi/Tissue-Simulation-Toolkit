@@ -95,6 +95,7 @@ void Cell::CellBirth(Cell &mother_cell) {
 
   grad[0] = mother_cell.grad[0];
   grad[1] = mother_cell.grad[1];
+  membrane_pixels = mother_cell.membrane_pixels;
 }
 
 void Cell::ConstructorBody(int settau) {
@@ -202,6 +203,10 @@ void Cell::RemovePixelFromMembrane(std::array<int, 2> pix) {
 
 std::vector<std::array<int,2>>& Cell::GetMembranePixels() {
     return membrane_pixels;
+}
+
+void Cell::SetMembranePixels(std::vector<std::array<int, 2>>) {
+    membrane_pixels = std::vector<std::array<int, 2>>();
 }
 
 int Cell::EnergyDifference(const Cell &cell2) const {

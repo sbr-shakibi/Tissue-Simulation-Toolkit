@@ -95,8 +95,7 @@ public:
       chem[ch] = src.chem[ch];
       
     mov_tracker = new MovementTracker(*src.mov_tracker);
-      
-
+    membrane_pixels = src.membrane_pixels;
   }
 
   /*! \brief Add a new cell to the dish.
@@ -151,6 +150,7 @@ public:
     target_perimeter = src.target_perimeter;
       //mov_tracker = src.mov_tracker;
       mov_tracker = new MovementTracker(*src.mov_tracker);
+    membrane_pixels = src.membrane_pixels;
     return *this;
   }
 
@@ -365,6 +365,8 @@ public:
   void RemovePixelFromMembrane(std::array<int, 2> pix);
 
   std::vector<std::array<int, 2>>& GetMembranePixels();
+
+  void SetMembranePixels(std::vector<std::array<int, 2>>);
 
   void setArea(int n_area) { area = n_area; }
 

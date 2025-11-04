@@ -472,6 +472,9 @@ public:
     Measure cell perimeters of all initial size and assign them to the cells
   */
   void MeasureCellPerimeters();
+  void RemoveMembranePixel(int sigma, std::array<int, 2> pixel);
+  void AddMembranePixel(int sigma, std::array<int, 2> pixel);
+
 
   void SetupCellMembranePixels();
 
