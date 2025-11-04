@@ -2395,6 +2395,14 @@ void CellularPotts::DivideCells(vector<bool> which_cells) {
   if (divflags)
     free(divflags);
 
+  for (vector<Cell>::iterator c = cell->begin(); c != cell->end(); c++) {
+    int sig = c->Sigma();
+    if (which_cells[sig] || sig > which_cells.size()) {
+      UpdateMembraneOnDivision(sig);
+    }
+  }
+}
+
 bool CellularPotts::isMembranePixel(int x, int y){
   // Check if the pixel at (x,y) is a membrane pixel
   int sigma_xy = sigma[x][y];
@@ -2408,6 +2416,62 @@ bool CellularPotts::isMembranePixel(int x, int y){
   return false;
 }
 
+void CellularPotts::UpdateMembraneOnDivision(int sig) {
+  // Update the cell's membrane pixels after division
+  std::vector<std::array<int, 2>> updated_membrane_pixels;
+
+  auto old_membrane_pixels = (*cell)[sig].GetMembranePixels();
+
+  // remove pixels that do not belong anymore to the cell
+  for (const auto& pixel : old_membrane_pixels) {
+    if (sigma[pixel[0]][pixel[1]] == sig) {
+      updated_membrane_pixels.push_back(pixel);
+    }
+  }
+
+  // Loop through existing membrane pixels to find where divisions occurred
+  int x_search, y_search;
+  for (const auto& pixel : updated_membrane_pixels) {
+    int x = pixel[0];
+    int y = pixel[1];
+    for (int i = 1; i <= n_nb; i++) {
+      x_search = FixPeriodic(x + nx[i], sizex);
+      y_search = FixPeriodic(y + ny[i], sizey);
+      if (sigma[x_search][y_search] == sig && !isMembranePixel(x_search, y_search)) {
+        break; // Found a division pixel, no need to check further
+      }
+    }
+  }
+
+  bool AllMembranePixelsUpdated = false;
+  // list of new membrane pixels to be added
+  std::vector<std::array<int, 2>> new_membrane_pixels;
+  std::vector<std::array<int, 2>> search_front_pixels;
+  search_front_pixels.push_back({x_search, y_search});
+  while (!AllMembranePixelsUpdated){
+    for (const auto& pixel : search_front_pixels){
+      int px = pixel[0];
+      int py = pixel[1];
+      for (int i = 1; i <= n_nb; i++) {
+
+        int x_new = FixPeriodic(px + nx[i], sizex);
+        int y_new = FixPeriodic(py + ny[i], sizey);
+        if (sigma[x_new][y_new] == sig && !isMembranePixel(x_new, y_new && \
+            std::find(updated_membrane_pixels.begin(), updated_membrane_pixels.end(), std::array<int, 2>{x_new, y_new}) == updated_membrane_pixels.end())) {
+          new_membrane_pixels.push_back({x_new, y_new});
+        }
+      }
+      if (new_membrane_pixels.size() == 0) {
+        AllMembranePixelsUpdated = true;
+      } else {
+        for (const auto& new_pixel : new_membrane_pixels) {
+          updated_membrane_pixels.push_back(new_pixel);
+        }
+      }
+    }
+    new_membrane_pixels.clear();
+  }
+  (*cell)[sig].SetMembranePixels(updated_membrane_pixels);
 }
 
 /**! Fill the plane with initial cells

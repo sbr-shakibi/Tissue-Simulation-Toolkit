@@ -475,6 +475,7 @@ public:
   void RemoveMembranePixel(int sigma, std::array<int, 2> pixel);
   void AddMembranePixel(int sigma, std::array<int, 2> pixel);
 
+  void UpdateMembraneOnDivision(int sigma);
 
   void SetupCellMembranePixels();
 
