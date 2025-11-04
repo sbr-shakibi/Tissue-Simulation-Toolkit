@@ -205,8 +205,8 @@ std::vector<std::array<int,2>>& Cell::GetMembranePixels() {
     return membrane_pixels;
 }
 
-void Cell::SetMembranePixels(std::vector<std::array<int, 2>>) {
-    membrane_pixels = std::vector<std::array<int, 2>>();
+void Cell::SetMembranePixels(std::vector<std::array<int, 2>> pixels) {
+    membrane_pixels = pixels;
 }
 
 int Cell::EnergyDifference(const Cell &cell2) const {

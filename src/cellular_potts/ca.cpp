@@ -2397,7 +2397,7 @@ void CellularPotts::DivideCells(vector<bool> which_cells) {
 
   for (vector<Cell>::iterator c = cell->begin(); c != cell->end(); c++) {
     int sig = c->Sigma();
-    if (which_cells[sig] || sig > which_cells.size()) {
+    if (which_cells[sig] || sig > which_cells.size()-1) {
       UpdateMembraneOnDivision(sig);
     }
   }
@@ -2430,16 +2430,22 @@ void CellularPotts::UpdateMembraneOnDivision(int sig) {
   }
 
   // Loop through existing membrane pixels to find where divisions occurred
-  int x_search, y_search;
+  int xn, yn, x_search, y_search;
+  bool division_found = false;
   for (const auto& pixel : updated_membrane_pixels) {
-    int x = pixel[0];
-    int y = pixel[1];
+    x_search = pixel[0];
+    y_search = pixel[1];
     for (int i = 1; i <= n_nb; i++) {
-      x_search = FixPeriodic(x + nx[i], sizex);
-      y_search = FixPeriodic(y + ny[i], sizey);
-      if (sigma[x_search][y_search] == sig && !isMembranePixel(x_search, y_search)) {
+      xn = FixPeriodic(x_search + nx[i], sizex);
+      yn = FixPeriodic(y_search + ny[i], sizey);
+      if (sigma[xn][yn] == sig && isMembranePixel(xn, yn) && \
+          std::find(updated_membrane_pixels.begin(), updated_membrane_pixels.end(), std::array<int, 2>{xn, yn}) == updated_membrane_pixels.end()) {
+        division_found = true;
         break; // Found a division pixel, no need to check further
       }
+    }
+    if (division_found) {
+      break; // Exit outer loop as well
     }
   }
 
@@ -2448,17 +2454,20 @@ void CellularPotts::UpdateMembraneOnDivision(int sig) {
   std::vector<std::array<int, 2>> new_membrane_pixels;
   std::vector<std::array<int, 2>> search_front_pixels;
   search_front_pixels.push_back({x_search, y_search});
-  while (!AllMembranePixelsUpdated){
-    for (const auto& pixel : search_front_pixels){
+  int loop_size = search_front_pixels.size();
+  for (int j = 0; j < loop_size; j++){
+    auto pixel = search_front_pixels[j];
       int px = pixel[0];
       int py = pixel[1];
       for (int i = 1; i <= n_nb; i++) {
 
         int x_new = FixPeriodic(px + nx[i], sizex);
         int y_new = FixPeriodic(py + ny[i], sizey);
-        if (sigma[x_new][y_new] == sig && !isMembranePixel(x_new, y_new && \
-            std::find(updated_membrane_pixels.begin(), updated_membrane_pixels.end(), std::array<int, 2>{x_new, y_new}) == updated_membrane_pixels.end())) {
+      if (sigma[x_new][y_new] == sig && isMembranePixel(x_new, y_new) && \
+          std::find(updated_membrane_pixels.begin(), updated_membrane_pixels.end(), std::array<int, 2>{x_new, y_new}) == updated_membrane_pixels.end()) {
           new_membrane_pixels.push_back({x_new, y_new});
+        search_front_pixels.push_back({x_new, y_new});
+        loop_size++;
         }
       }
       if (new_membrane_pixels.size() == 0) {
@@ -2466,7 +2475,6 @@ void CellularPotts::UpdateMembraneOnDivision(int sig) {
       } else {
         for (const auto& new_pixel : new_membrane_pixels) {
           updated_membrane_pixels.push_back(new_pixel);
-        }
       }
     }
     new_membrane_pixels.clear();
