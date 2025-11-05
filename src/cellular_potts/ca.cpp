@@ -294,16 +294,19 @@ vector<array<int, 3>> CellularPotts::CellPerimeterContact() {
     perimeter_contact[i] = {static_cast<int>(i), 0, 0};
   }
 
-  auto membrane_data= GetCellMembranePixels();
+  // Get membrane data for all cells
+  for (vector<Cell>::iterator c = cell->begin(); c != cell->end(); ++c) {
+    auto membrane_data = c->GetMembranePixels();
+    int cell_id = c->Sigma();
+    perimeter_contact[cell_id][1] = membrane_data.size();
   for (auto &pixel_info : membrane_data) {
-    int cell_id = sigma[pixel_info.x][pixel_info.y];
-    perimeter_contact[cell_id][1] += 1;
     for (int n = 1; n <= n_nb; n++) {
-      int xn = FixPeriodic(pixel_info.x + nx[n], sizex);
-      int yn = FixPeriodic(pixel_info.y + ny[n], sizey);
+        int xn = FixPeriodic(pixel_info[0] + nx[n], sizex);
+        int yn = FixPeriodic(pixel_info[1] + ny[n], sizey);
       if (sigma[xn][yn] == 0){
         perimeter_contact[cell_id][2] += 1;
         break; // Count each membrane pixel only once for contact with medium
+        }
       }
     }
   }
