@@ -71,7 +71,7 @@ INIT {
 
     CPM->GrowInCells(par.n_init_cells, par.size_init_cells, par.subfield);
     CPM->ConstructInitCells(*this);
-    CPM->MeasureCellPerimeters();
+    CPM->SetupCellMembranePixels();
 
     // int cell_size=5;
     // int x_pos;
@@ -110,16 +110,8 @@ TIMESTEP {
         io = new IO(*dish);
     }
 
-    // double alpha = 3.14159265/10.0;
-    // int A0 = 50;
-    // alpha = alpha * DSQR(sqrt(static_cast<double>(A0)/3.14159265)) / 86.0; // unit conversion
-    // std::cerr << "alpha = " << alpha << std::endl;
-    // double beta = 0.0;
-    // double gamma = 0.01;
-    // std::cerr << "time= " << i << std::endl;
-    dish->CPM->ReportCellData();
+    dish->CPM->DivideCellsByArea(0,static_cast<int>(std::round(par.CIP_division_size_ratio*par.target_area)));
     dish->CPM->GrowCells(0, par.area_growth_rate,par.CIP_area_ratio * par.target_area,par.CIP_neighbour_ratio);
-    dish->CPM->DivideCellsByArea(0,par.CIP_division_size_ratio*par.target_area);
 
     if (par.graphics && !(i % par.storage_stride)) {
       PROFILE(all_plots, plotter->Plot();)
@@ -127,7 +119,6 @@ TIMESTEP {
       dish->CPM->FindBoundingBox(); // old: Setboundingbox
     }
 
-    write_cell_positions(i,par,"tst.csv",1,cellpos_stream,info);
 
     if (i == 0 && par.pause_on_start) {
       info->set_Paused();
@@ -142,6 +133,13 @@ TIMESTEP {
       char fname[200], fname_mcds[200];
       snprintf(fname, 199, "%s/snapshot%05d.png", par.datadir.c_str(), i);
       Write(fname);
+      write_cell_positions(i,par,"tst.csv",1,cellpos_stream,info);
+    }
+
+    int max_cell_count = 10000;
+    if (dish->CountCells() > max_cell_count) {
+      write_cell_positions(i,par,"tst.csv",1,cellpos_stream,info);
+      exit(0);
     }
 
     if (!info->IsPaused()) {
