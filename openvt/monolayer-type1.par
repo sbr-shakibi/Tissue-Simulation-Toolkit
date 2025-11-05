@@ -28,7 +28,7 @@ CIP_area_ratio = 0.0
 CIP_neighbour_ratio = 0.0
 CIP_division_size_ratio = 2.0
 
-mcs = 100000                   
+mcs = 9999999                   
 rseed = -1
 n_init_cells = 1
 

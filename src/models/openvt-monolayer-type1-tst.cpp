@@ -131,7 +131,7 @@ TIMESTEP {
 
     if (par.store && !(i % par.storage_stride)) {
       char fname[200], fname_mcds[200];
-      snprintf(fname, 199, "%s/snapshot%05d.png", par.datadir.c_str(), i);
+      snprintf(fname, 199, "%s/snapshot%06d.png", par.datadir.c_str(), i);
       Write(fname);
       write_cell_positions(i,par,"tst.csv",1,cellpos_stream,info);
     }
