@@ -2986,27 +2986,29 @@ void CellularPotts::GrowCells(int cell_type,double growth_rate,double size_thres
   // growth_rate and size_threshold can be changed into vectors containing growth rates and thresholds of different cell types.
   vector<Cell>::iterator c = cell->begin();
   ++c;
-  std::unordered_map<int, int> MediumEdgeCount;
-
-  // This is an expensive operation, so we only do it if neighbour_threshold > 0
-  if (neighbour_threshold > 0){
-    MediumEdgeCount = MembraneMediumEdgeCount(); // update the MediumEdgeCount
-  }
-
+  auto CellContactData=  CellPerimeterContact();
   for (; c != cell->end(); c++) {
+    int cell_id = c->Sigma();
+    bool Area_Threshold_Exceeded= false, Neighbour_Threshold_Exceeded= false;
     // grow specific cell type or all cells
     if (c->getTau() == cell_type || cell_type == 0) {
       // check if size is larger than the threshold
       if (c->Area() >= size_threshold) {
-        if (neighbour_threshold==0) {
-          // This is to avoid expensive operations 
+        Area_Threshold_Exceeded = true;
+      }
+      if (static_cast<double>(CellContactData[cell_id][2]) >= static_cast<double>(CellContactData[cell_id][1]) * neighbour_threshold) {
+        Neighbour_Threshold_Exceeded = true;
+      }
+      
+      if (Area_Threshold_Exceeded && Neighbour_Threshold_Exceeded) {
           c->SetTargetArea(c->TargetArea() + growth_rate);
+          c->SetColour(5);
+      } else if (!Area_Threshold_Exceeded && Neighbour_Threshold_Exceeded) {
+        c->SetColour(3);
+      } else if (!Neighbour_Threshold_Exceeded && Area_Threshold_Exceeded) {
+        c->SetColour(4);
         } else {
-          // only grow if the cell is larger than the threshold and has enough free neighbours
-          if (MediumEdgeCount[c->Sigma()] >= c->Perimeter() * neighbour_threshold) {
-            c->SetTargetArea(c->TargetArea() + growth_rate);
-          }
-        }
+        c->SetColour(2);
       }
     }
   }
