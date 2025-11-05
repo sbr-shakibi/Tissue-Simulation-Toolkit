@@ -35,6 +35,8 @@ PARAMETER(int, storage_stride, 10, "Interval at which to store/show plots")
 PARAMETER(std::string, datadir, "data_film", "Directory to store plots in")
 PARAMETER(std::string, colortable, "../data/default.ctb",
           "Colortable to use for plotting")
+PARAMETER(bool, programmatic_coloring, false,
+          "Whether to use programmatic coloring for cell types")
 
 PARAMETER(
     bool, pause_on_start, false,

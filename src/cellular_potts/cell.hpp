@@ -171,11 +171,12 @@ public:
   inline bool AliveP(void) const { return alive; }
 
   //! Returns the cell colour.
-  inline int Colour(void) const {
-    /* if (par.dynamicJ)
+  int Colour(void) const {
+    if (par.programmatic_coloring){
       return colour;
-      else */
-    return tau + 1;
+    } else {
+      return tau + 1;
+    }
   };
 
   //! Set cell type of this Cell.
