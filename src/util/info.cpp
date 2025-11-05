@@ -232,7 +232,7 @@ void Info::set_unPaused() {
 // Write the center of mass, area and perimeter
 void Info::WriteCOMsTorus(std::ostream &out, const std::string& delimiter) {
   int cell_number = dish->CountCells();
-  static int t;
+  int t = dish->CPM->Time();
   for (int s = 1; s < cell_number + 1; s++) {
     double com_x = dish->getCell(s).getCenterX();
     double com_y = dish->getCell(s).getCenterY();
@@ -241,7 +241,7 @@ void Info::WriteCOMsTorus(std::ostream &out, const std::string& delimiter) {
     // int a = dish->getCell(s).GetAdhesiveArea();
     out << t << delimiter << s << delimiter << com_x << delimiter << com_y << delimiter << n << delimiter << p << "\n";
   }
-  t++;
+  // t++;
 }
 
 // Write the center of mass to "out" based on the internal COMs
