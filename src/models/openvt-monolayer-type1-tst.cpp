@@ -138,6 +138,9 @@ TIMESTEP {
 
     int max_cell_count = 10000;
     if (dish->CountCells() > max_cell_count) {
+      char fname[200], fname_mcds[200];
+      snprintf(fname, 199, "%s/snapshot%06d.png", par.datadir.c_str(), i);
+      Write(fname);
       write_cell_positions(i,par,"tst.csv",1,cellpos_stream,info);
       exit(0);
     }
