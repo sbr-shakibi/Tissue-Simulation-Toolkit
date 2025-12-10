@@ -54,7 +54,7 @@ void write_cell_positions(int i, const Parameter& par, const std::string& output
   if (i == 0) {
     std::cout << "Opening cell position" << std::endl;
     out.open(filename);
-    out << "time (MCS),cell id,com_1 (px),com_2 (px),area (px^2),perimeter (px)" << std::endl;
+    out << "time (MCS),cell id,com_1 (px),com_2 (px), growth_status, N_neighbours" << std::endl;
 
     if (!out) {
       std::cerr << "Failed to open file!" << std::endl;
@@ -62,7 +62,7 @@ void write_cell_positions(int i, const Parameter& par, const std::string& output
   } else if (i % output_per == 0) {
     out.open(filename, std::ios::app);
   }
-  info->WriteCOMsTorus(out, ",");
+  info->WriteOutputs(out,std::vector<std::string> {"time","sigma","com_x","com_y","color_id","n_neighbours"}, ",");
 }
 
 INIT {
