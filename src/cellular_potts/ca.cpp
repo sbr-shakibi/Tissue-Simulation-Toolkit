@@ -289,6 +289,10 @@ vector<array<int, 3>> CellularPotts::CellPerimeterContact() {
   // perimeter_contact[cell_id][1] = perimeter length
   // perimeter_contact[cell_id][2] = contact with medium
 
+  // The method 1 calculates the pixels inside the cells. The method 2 calculates the pixels outside the cells.
+  // and method 3 calculates the edges connecting two cells (consistent with other CPMs). 
+  int method = 3;
+
   perimeter_contact.resize(cell->size());
   for (int i = 0; i < cell->size(); i++) {
     perimeter_contact[i] = {static_cast<int>(i), 0, 0};
@@ -298,14 +302,61 @@ vector<array<int, 3>> CellularPotts::CellPerimeterContact() {
   for (vector<Cell>::iterator c = cell->begin(); c != cell->end(); ++c) {
     auto membrane_data = c->GetMembranePixels();
     int cell_id = c->Sigma();
-    perimeter_contact[cell_id][1] = membrane_data.size();
-  for (auto &pixel_info : membrane_data) {
-    for (int n = 1; n <= n_nb; n++) {
-        int xn = FixPeriodic(pixel_info[0] + nx[n], sizex);
-        int yn = FixPeriodic(pixel_info[1] + ny[n], sizey);
-      if (sigma[xn][yn] == 0){
-        perimeter_contact[cell_id][2] += 1;
-        break; // Count each membrane pixel only once for contact with medium
+
+    if (method ==1){
+      perimeter_contact[cell_id][1] = membrane_data.size();
+      for (auto &pixel_info : membrane_data) {
+        for (int n = 1; n <= n_nb; n++) {
+            int xn = FixPeriodic(pixel_info[0] + nx[n], sizex);
+            int yn = FixPeriodic(pixel_info[1] + ny[n], sizey);
+          if (sigma[xn][yn] == 0){
+            perimeter_contact[cell_id][2] += 1;
+            break; // Count each membrane pixel only once for contact with medium
+            }
+          }
+        }
+
+    } else if (method ==2) {
+      std::vector<std::array<int, 2>> outside_pixels;// A vector containing outisde pixels
+      for (auto &pixel_info : membrane_data) {
+        int x = pixel_info[0];
+        int y = pixel_info[1];
+
+        for (int n = 1; n <= n_nb; n++) {
+            int xn = FixPeriodic(x + nx[n], sizex);
+            int yn = FixPeriodic(y + ny[n], sizey);
+          if (sigma[xn][yn] != cell_id){
+            outside_pixels.push_back({xn,yn});
+          }
+        }
+      }
+
+      // sorting and making a unique list of outside pixels
+      std::sort(outside_pixels.begin(), outside_pixels.end());
+      outside_pixels.erase(std::unique(outside_pixels.begin(), outside_pixels.end()), outside_pixels.end());
+      perimeter_contact[cell_id][1] = outside_pixels.size();
+
+      for (auto &pixel_info : outside_pixels){
+        if (sigma[pixel_info[0]][pixel_info[1]] == 0){
+          perimeter_contact[cell_id][2] += 1;
+        }
+      }
+
+    } else if (method ==3) {
+      for (auto &pixel_info : membrane_data) {
+        for (int n = 1; n <= n_nb; n++) {
+            int xn = FixPeriodic(pixel_info[0] + nx[n], sizex);
+            int yn = FixPeriodic(pixel_info[1] + ny[n], sizey);
+
+          // If pixel does not belong to the same cell
+          if (sigma[xn][yn] != cell_id){
+            perimeter_contact[cell_id][1] += 1;
+
+            // If pixel belongs to medium
+            if (sigma[xn][yn] == 0){
+              perimeter_contact[cell_id][2] += 1;
+            }
+          }
         }
       }
     }
