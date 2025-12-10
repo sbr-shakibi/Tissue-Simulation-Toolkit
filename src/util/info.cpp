@@ -244,6 +244,45 @@ void Info::WriteCOMsTorus(std::ostream &out, const std::string& delimiter) {
   // t++;
 }
 
+// Write out properties of the cells
+void Info::WriteOutputs(std::ostream &out,std::vector<std::string> output_list, const std::string& delimiter) {
+  int cell_number = dish->CountCells();
+  int t = dish->CPM->Time();
+  for (int s = 1; s < cell_number + 1; s++) {
+    for (int i = 0; i<output_list.size();i++){
+        std::string property = output_list[i];
+        if (property=="time"){
+            out << t;
+        } else if (property=="sigma"){
+            out << s;
+        } else if (property=="com_x"){
+            out << dish->getCell(s).getCenterX();
+        } else if (property=="com_y"){
+            out << dish->getCell(s).getCenterY();
+        } else if (property=="area"){
+            out << dish->getCell(s).Area();
+        } else if (property=="perimeter"){
+            out << dish->getCell(s).Perimeter();
+        } else if (property=="adhesive_area"){
+            out << dish->getCell(s).GetAdhesiveArea();
+        } else if (property=="color_id"){
+            out << dish->getCell(s).Colour();
+        } else if (property=="cell_type"){
+            out << dish->getCell(s).getTau();
+        } else if (property=="n_neighbours"){
+            out << dish->CPM->CountNeighours(s);
+        } else {
+            out << "NaN"; // unknown property
+        }
+        if (i<output_list.size()-1){
+            out << delimiter;
+        }
+    }
+    out << "\n";
+  }
+}
+
+
 // Write the center of mass to "out" based on the internal COMs
 void Info::WriteCOMsTorus(std::ostream &out) {
   WriteCOMsTorus(out, " ");
