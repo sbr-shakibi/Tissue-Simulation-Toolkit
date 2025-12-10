@@ -481,6 +481,8 @@ public:
 
   bool isMembranePixel(int x, int y);
 
+  int CountNeighours(int sig);
+
   void ReportCellData();
 
   /*! \brief Run amoebaemove while only accepting negative delta H

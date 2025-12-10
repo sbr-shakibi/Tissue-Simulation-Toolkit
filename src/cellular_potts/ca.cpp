@@ -1615,6 +1615,23 @@ void CellularPotts::PlotIsing(Graphics *g, int mag) {
     }
 }
 
+int CellularPotts::CountNeighours(int sig){
+  vector<int> neighbour_sigmas;
+  auto membrane_pixels = (*cell)[sig].GetMembranePixels();
+  int xn, yn, neigh_sig;
+  for (const auto& pixel : membrane_pixels){
+    for (int i=0; i<n_nb; i++){
+      xn = FixPeriodic(nx[i] + pixel[0], sizex);
+      yn = FixPeriodic(ny[i] + pixel[1], sizey);
+      neigh_sig = sigma[xn][yn];
+      if (neigh_sig != sig && neigh_sig != 0 && std::find(neighbour_sigmas.begin(), neighbour_sigmas.end(), neigh_sig) == neighbour_sigmas.end()){
+        neighbour_sigmas.push_back(neigh_sig);
+      }
+    }
+  }
+  return neighbour_sigmas.size();
+}
+
 int **CellularPotts::SearchNandPlot(Graphics *g, bool get_neighbours) {
   int i, j, q;
   int **neighbours = 0;
