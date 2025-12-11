@@ -96,6 +96,19 @@ void Cell::CellBirth(Cell &mother_cell) {
   grad[0] = mother_cell.grad[0];
   grad[1] = mother_cell.grad[1];
   membrane_pixels = mother_cell.membrane_pixels;
+
+  if (par.cell_division_area_mean >= 0) {
+    division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
+    // Ensure positive division area
+    while (division_area < 0) {
+        division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
+    }
+    mother_cell.division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
+    // Ensure positive division area
+    while (mother_cell.division_area < 0) {
+        mother_cell.division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
+    }
+  }
 }
 
 void Cell::ConstructorBody(int settau) {
@@ -141,6 +154,13 @@ void Cell::ConstructorBody(int settau) {
   sum_sin_y = 0.;
   sum_cos_y = 0.;
   std::vector<std::array<int, 2>> membrane_pixels = std::vector<std::array<int, 2>>();
+
+  if (par.cell_division_area_mean >= 0) {
+  division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
+  // Ensure positive division area
+  while (division_area < 0) {
+      division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
+  }
 
   //  growth_threshold=par.dthres;
   growth_threshold = 0;

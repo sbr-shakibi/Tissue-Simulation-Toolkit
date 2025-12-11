@@ -96,6 +96,7 @@ public:
       
     mov_tracker = new MovementTracker(*src.mov_tracker);
     membrane_pixels = src.membrane_pixels;
+    division_area = src.division_area;
   }
 
   /*! \brief Add a new cell to the dish.
@@ -151,6 +152,7 @@ public:
       //mov_tracker = src.mov_tracker;
       mov_tracker = new MovementTracker(*src.mov_tracker);
     membrane_pixels = src.membrane_pixels;
+    division_area = src.division_area;
     return *this;
   }
 
@@ -651,6 +653,7 @@ protected:
   static int sizey;
   double border;
   std::vector<std::array<int, 2>> membrane_pixels;
+  double division_area;
 
     MovementTracker *mov_tracker;
   const Dish *owner; // pointer to owner of cell
