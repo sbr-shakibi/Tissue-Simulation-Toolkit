@@ -2530,6 +2530,11 @@ void CellularPotts::UpdateMembraneOnDivision(int sig) {
   // Loop through existing membrane pixels to find where divisions occurred
   int xn, yn, x_search, y_search;
   bool division_found = false;
+
+  if (updated_membrane_pixels.size()==0) {
+    throw std::runtime_error("No membrane pixels found for cell with sigma " + std::to_string(sig));
+  }
+
   for (const auto& pixel : updated_membrane_pixels) {
     x_search = pixel[0];
     y_search = pixel[1];
