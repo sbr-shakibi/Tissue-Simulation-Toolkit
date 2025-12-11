@@ -121,6 +121,8 @@ PARAMETER(double, area_growth_rate, 0.0, "Growth rate for cell area in px^2/MCS"
 PARAMETER(double, CIP_area_ratio, 0.0, "The ratio of cell area to target area below which cells do not grow")
 PARAMETER(double, CIP_neighbour_ratio, 0.0, "The ratio of cell neibours in contact with medium to perimeter below which cells do not grow")
 PARAMETER(double, CIP_division_size_ratio, 0.0, "The ratio of cell area to target area above which cells divide")
+PARAMETER(double, cell_division_area_mean, -1.0, "The mean division area for cells using a Gaussian distribution. If negative, the random division is disabled.")
+PARAMETER(double, cell_division_area_std, 0.0, "The standard deviation of the division area for cells.")
 
 SECTION("Actin model")
 
