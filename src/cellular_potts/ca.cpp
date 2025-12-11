@@ -3087,16 +3087,16 @@ void CellularPotts::GrowCells(int cell_type,double growth_rate,double size_thres
   }
 }
 
-void CellularPotts::DivideCellsByArea(int cell_type,int area_theshold) {
+void CellularPotts::DivideCellsByArea(int cell_type,int area_threshold) {
   // TODO: cell_type can be changed into a vector containing all the cell types that can divide
-  // area_theshold can be changed into a vector containing area_thresholds for different cell types.
+  // area_threshold can be changed into a vector containing area_thresholds for different cell types.
   vector<Cell>::iterator c = cell->begin();
   ++c;
   vector<bool> which_cells(cell->size());
 
   for (; c != cell->end(); c++) {
     if (c->getTau() == cell_type || cell_type == 0) {
-      if (c->Area() >= area_theshold) {
+      if (c->Area() >= area_threshold) {
         which_cells[c->Sigma()] = true;
       } else {
         which_cells[c->Sigma()] = false;
@@ -3107,6 +3107,7 @@ void CellularPotts::DivideCellsByArea(int cell_type,int area_theshold) {
   }
   DivideCells(which_cells);
 }
+
 
 double CellularPotts::DrawConvexHull(Graphics *g, int color) {
   // Draw the convex hull of the cells

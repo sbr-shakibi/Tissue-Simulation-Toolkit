@@ -429,7 +429,24 @@ public:
   dividing of all the cells.
   \param area_threshold: the area threshold for division.
   */
-  void DivideCellsByArea(int cell_type,int area_theshold);
+  void DivideCellsByArea(int cell_type,int area_threshold);
+
+  /*! \brief Cells of specific type divide if their area is larger than a randomly
+  drawn area threshold stored in the cell.
+  \param cell_type: the cell type to divide. A value of zero would result in
+  dividing of all the cells.
+  \return a vector<bool> indicating which cells will be divided.
+  */
+  vector<bool> DivideCellsByRandomArea(int cell_type);
+
+  /*! \brief Cells of specific type divide if they satisfy a given rule.
+  \param cell_type: the cell type to divide. A value of zero would result in
+  dividing of all the cells.
+  \param method: method to determine division rule, currently only "random" is
+  implemented. If "random", division area is drawn from a Gaussian distribution with mean
+  and standard deviation defined in the parameter file.
+  */
+  void DivideCellsWithRule(std::string method,int cell_type=0);
 
   inline Cell &getCell(int c) { return (*cell)[c]; }
 
