@@ -3108,6 +3108,41 @@ void CellularPotts::DivideCellsByArea(int cell_type,int area_threshold) {
   DivideCells(which_cells);
 }
 
+vector<bool> CellularPotts::DivideCellsByRandomArea(int cell_type) {
+  // TODO: cell_type can be changed into a vector containing all the cell types that can divide
+  // area_threshold can be changed into a vector containing area_thresholds for different cell types.
+  vector<Cell>::iterator c = cell->begin();
+  ++c;
+  vector<bool> which_cells(cell->size());
+
+  for (; c != cell->end(); c++) {
+    if (c->getTau() == cell_type || cell_type == 0) {
+      if (c->Area() >= c->division_area) {
+        which_cells[c->Sigma()] = true;
+      } else {
+        which_cells[c->Sigma()] = false;
+      }
+    } else {
+      which_cells[c->Sigma()] = false;
+    }
+  }
+  return which_cells;
+}
+
+void CellularPotts::DivideCellsWithRule(std::string method,int cell_type) {
+  // TODO: cell_type can be changed into a vector containing all the cell types that can divide
+  // if cell_type=0, all cell types can divide
+  vector<bool> which_cells(cell->size());
+  if (method == "random_area") {
+    which_cells = DivideCellsByRandomArea(cell_type);
+  } else {
+    throw "In CellularPotts::DivideCellsWithRule, unknown method.";
+  }
+  if (which_cells.size() > 0) {
+    DivideCells(which_cells);
+  }
+}
+
 
 double CellularPotts::DrawConvexHull(Graphics *g, int color) {
   // Draw the convex hull of the cells
