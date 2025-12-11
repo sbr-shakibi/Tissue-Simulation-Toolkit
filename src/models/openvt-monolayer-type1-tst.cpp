@@ -110,7 +110,7 @@ TIMESTEP {
         io = new IO(*dish);
     }
 
-    dish->CPM->DivideCellsByArea(0,static_cast<int>(std::round(par.CIP_division_size_ratio*par.target_area)));
+    dish->CPM->DivideCellsWithRule("random_area");
     dish->CPM->GrowCells(0, par.area_growth_rate,par.CIP_area_ratio * par.target_area,par.CIP_neighbour_ratio);
 
     if (par.graphics && !(i % par.storage_stride)) {
