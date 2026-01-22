@@ -156,10 +156,11 @@ void Cell::ConstructorBody(int settau) {
   std::vector<std::array<int, 2>> membrane_pixels = std::vector<std::array<int, 2>>();
 
   if (par.cell_division_area_mean >= 0) {
-  division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
-  // Ensure positive division area
-  while (division_area < 0) {
+    division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
+    // Ensure positive division area
+    while (division_area < 0) {
       division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
+    }
   }
 
   //  growth_threshold=par.dthres;
