@@ -1,7 +1,7 @@
 # Cellular Potts parameters
 T = 20
 target_area = 50
-lambda = 5
+lambda = 2
 # to be removed?
 lambda2 = 0                 
 
@@ -24,8 +24,8 @@ sizey = 7
 # For the burn in phase
 relaxation = 100            
 
-# relaxation + 5xT (with T = 86 MCS)
-mcs = 960                   
+# relaxation + 10xT (with T = 183 MCS)
+mcs = 1930                   
 rseed = -1
 n_init_cells = 11
 

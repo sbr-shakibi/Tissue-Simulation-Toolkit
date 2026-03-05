@@ -67,7 +67,7 @@ def main():
     tracks.to_csv(output_path+ "/" + "tracks.csv",float_format='%.7E')
 
     CD= 10 #px
-    T = 86 #MCS
+    T = 183 #MCS
     T_burnin=100 #MCS
     total_width_flag= True
     if total_width_flag:
