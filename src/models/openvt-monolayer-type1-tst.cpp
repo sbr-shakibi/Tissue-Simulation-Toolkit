@@ -42,6 +42,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 #include <filesystem>
 #include <iomanip>
 #include <memory>
+#include "ca.hpp"
 
 
 using namespace std;
@@ -110,7 +111,7 @@ TIMESTEP {
         io = new IO(*dish);
     }
 
-    dish->CPM->DivideCellsWithRule("random_area");
+    dish->CPM->DivideCellsByTargetArea();
     dish->CPM->GrowCells(0, par.area_growth_rate,par.CIP_area_ratio * par.target_area,par.CIP_neighbour_ratio);
 
     if (par.graphics && !(i % par.storage_stride)) {
@@ -136,7 +137,7 @@ TIMESTEP {
       write_cell_positions(i,par,"tst.csv",1,cellpos_stream,info);
     }
 
-    int max_cell_count = 10000;
+    int max_cell_count = 1000;
     if (dish->CountCells() > max_cell_count) {
       char fname[200], fname_mcds[200];
       snprintf(fname, 199, "%s/snapshot%06d.png", par.datadir.c_str(), i);
@@ -155,6 +156,98 @@ TIMESTEP {
   }
   PROFILE_PRINT
 }
+
+void CellularPotts::DivideCellsByTargetArea() {
+  // Create a vector to keep track of which cells should be divided
+  vector<bool> which_cells(cell->size());
+
+  // Iterate through the cells and determine which ones should be divided based on their target area
+  vector<Cell>::iterator c = cell->begin();
+  ++c;
+
+  for (; c != cell->end(); c++) {
+    if (c->TargetArea() >= c->division_area) {
+      which_cells[c->Sigma()] = true;
+    } else {
+      which_cells[c->Sigma()] = false;
+    }
+  }
+  if (which_cells.size() > 0) {
+    DivideCells(which_cells);
+  }
+}
+ 
+void CellularPotts::GrowCells(int cell_type,double growth_rate,double size_threshold,double neighbour_threshold) {
+  // TODO: cell_type can be changed into a vector containing all the cell types that should grow
+  // growth_rate and size_threshold can be changed into vectors containing growth rates and thresholds of different cell types.
+  vector<Cell>::iterator c = cell->begin();
+  ++c;
+  auto CellContactData =  CellPerimeterContact();
+
+  // Writing cell properties
+  int N_cells_to_report = 1000;
+  bool write_to_file = false;
+  std::ofstream file_write;
+  std::string filename = par.datadir + "/cell_data_no_inhibition_" + std::to_string(thetime) + ".csv";
+  if ((cell->size()>=N_cells_to_report && cell->size()<N_cells_to_report+50)){
+    // Excluding cells that have zero area.
+    int cell_count=0;
+    for (; c != cell->end(); c++){
+	if (c->Area() >0){
+		cell_count++;
+	}
+    }
+    //if (cell_count > N_cells_to_report && (thetime % 46 == 0)){
+    if (cell_count > N_cells_to_report){
+	// Checking if the file already exists (this helps to avoid double writing)
+        std::ifstream file_read(filename);
+	if (!file_read.good()){
+	   file_read.close();
+	   // The file does not exist. Now we are writing a header in the file.
+	   file_write.open(filename);
+	   write_to_file = true;
+	   //file_write << std::scientific << std::setprecision(6);  // Adjust precision as needed
+	   file_write << "x_pos,y_pos,radius_i,a_i,f_i\n";
+	}
+    }
+  }
+
+  c = cell->begin();
+  c++;
+  for (; c != cell->end(); c++) {
+    int cell_id = c->Sigma();
+    bool Area_Threshold_Exceeded= false, Neighbour_Threshold_Exceeded= false;
+    // grow specific cell type or all cells
+    if (c->getTau() == cell_type || cell_type == 0) {
+      // check if size is larger than the threshold
+      if (c->Area() >= size_threshold) {
+        Area_Threshold_Exceeded = true;
+      }
+      if (static_cast<double>(CellContactData[cell_id][2]) >= static_cast<double>(CellContactData[cell_id][1]) * neighbour_threshold) {
+        Neighbour_Threshold_Exceeded = true;
+      }
+
+      // Writing cell properties
+      if (write_to_file && c->Area()>0){
+//file_write << thetime << "," << cell_id << "," << c->Area()/c->TargetArea() << "," << static_cast<double>(CellContactData[cell_id][2])/static_cast<double>(CellContactData[cell_id][1]) << "," << c->getCenterX() << "," << c->getCenterY() << "\n";
+        file_write << c->getCenterX() << "," << c->getCenterY() << "," << sqrt(c->TargetArea()/M_PI) << "," << c->Area()/c->TargetArea() << "," << static_cast<double>(CellContactData[cell_id][2])/static_cast<double>(CellContactData[cell_id][1]) <<  "\n";
+      }
+
+      // Growth and color assignment
+      if (Area_Threshold_Exceeded && Neighbour_Threshold_Exceeded) {
+          c->SetTargetArea(c->TargetArea() + growth_rate);
+          c->SetColour(5);
+      } else if (!Area_Threshold_Exceeded && Neighbour_Threshold_Exceeded) {
+        c->SetColour(3);
+      } else if (!Neighbour_Threshold_Exceeded && Area_Threshold_Exceeded) {
+        c->SetColour(4);
+        } else {
+        c->SetColour(2);
+      }
+    }
+  }
+}
+
 
 void Plotter::Plot() {
   graphics->BeginScene();

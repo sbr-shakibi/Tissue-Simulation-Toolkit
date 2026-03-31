@@ -438,6 +438,7 @@ public:
   \return a vector<bool> indicating which cells will be divided.
   */
   vector<bool> DivideCellsByRandomArea(int cell_type);
+  void DivideCellsByTargetArea();
 
   /*! \brief Cells of specific type divide if they satisfy a given rule.
   \param cell_type: the cell type to divide. A value of zero would result in
