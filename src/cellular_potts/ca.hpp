@@ -236,6 +236,7 @@ public:
    If which_cells is empty, this method divides all cells.
   */
   void DivideCells(std::vector<bool> which_cells);
+  void DivideCellsInheritTargetArea(std::vector<bool> which_cells);
 
   /*! Implements the core CPM algorithm. Carries out one MCS.
     \return Total energy change during MCS.

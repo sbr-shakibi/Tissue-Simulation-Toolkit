@@ -173,7 +173,7 @@ void CellularPotts::DivideCellsByTargetArea() {
     }
   }
   if (which_cells.size() > 0) {
-    DivideCells(which_cells);
+    DivideCellsInheritTargetArea(which_cells);
   }
 }
  
@@ -248,6 +248,108 @@ void CellularPotts::GrowCells(int cell_type,double growth_rate,double size_thres
   }
 }
 
+void CellularPotts::DivideCellsInheritTargetArea(vector<bool> which_cells) {
+
+  // for the cell directions
+  Dir *celldir = 0;
+
+  /* Allocate space for divisionflags */
+  int *divflags = (int *)malloc((cell->size() * 2 + 5) * sizeof(int));
+
+  /* Clear divisionflags */
+  for (int i = 0; i < (int)(cell->size() * 2 + 5); i++)
+    divflags[i] = 0;
+
+  /* Store TargetAreas of the cells */
+  vector<float> target_areas_before_division;
+  for (size_t i = 0; i < cell->size(); ++i) {
+    target_areas_before_division.push_back((*cell)[i].TargetArea());
+  }
+
+  if (!(which_cells.size() == 0 || which_cells.size() >= cell->size())) {
+    throw "In CellularPotts::DivideCells, Too few elements in vector<int> "
+          "which_cells.";
+  }
+
+  /* division */
+  for (int i = 0; i < sizex; i++) {
+    for (int j = 0; j < sizey; j++)
+      if (sigma[i][j] > 0) { // i.e. not medium and not border state (-1)
+        // Pointer to mother. Warning: Renew pointer after a new
+        // cell is added (push_back). Then, the array *cell is relocated and
+        // the pointer will be lost...
+
+        Cell *motherp = &((*cell)[sigma[i][j]]);
+        Cell *daughterp;
+
+        /* Divide if NOT medium and if DIV bit set or divide_always is set */
+        // if which_cells is given, divide only if the cell
+        // is marked in which_cells.
+        if (!which_cells.size() || which_cells[motherp->sigma]) {
+          if (!(divflags[motherp->Sigma()])) {
+            // add daughter cell, copying states of mother
+            daughterp = new Cell(*(motherp->owner));
+            daughterp->CellBirth(*motherp);
+            cell->push_back(*daughterp);
+
+            // renew pointer to mother
+            motherp = &((*cell)[sigma[i][j]]);
+
+            divflags[motherp->Sigma()] = daughterp->Sigma();
+            delete daughterp;
+
+            // array may be relocated after "push_back"
+
+            // renew daughter pointers
+            daughterp = &(cell->back());
+
+            /* administration on the onset of mitosis */
+
+            /* Ancestry is taken care of in copy constructor of Cell
+               see cell.hh: Cell(const Cell &src, bool newcellP=false) :
+               Cytoplasm(src) {} */
+
+            /* inherit  polarity of mother */
+            // All that needs to be copied is copied in the copy constructor
+            // of Cell and in the default copy constr. of its base class
+            // Cytoplasm note: also the celltype is inherited
+          } else {
+            daughterp = &((*cell)[divflags[motherp->Sigma()]]);
+          }
+
+          /* Now the actual division takes place */
+
+          /* If celldirections where not yet computed: do it now */
+          if (!celldir)
+            celldir = FindCellDirections();
+
+          /* if site is below the minor axis of the cell: sigma of new cell */
+          if (j > ((int)(celldir[motherp->sigma].aa2 +
+                         celldir[motherp->sigma].bb2 * (double)i))) {
+            motherp->SetTargetArea(target_areas_before_division[motherp->Sigma()]/2.0f);
+            daughterp->SetTargetArea(target_areas_before_division[motherp->Sigma()]/2.0f);
+            motherp->DecrementArea();
+            motherp->RemoveSiteFromMoments(i, j);
+            sigma[i][j] = daughterp->Sigma();
+            daughterp->IncrementArea();
+            daughterp->AddSiteToMoments(i, j);
+          }
+        }
+      }
+  }
+  if (celldir)
+    delete[](celldir);
+
+  if (divflags)
+    free(divflags);
+
+  for (vector<Cell>::iterator c = cell->begin(); c != cell->end(); c++) {
+    int sig = c->Sigma();
+    if (which_cells[sig] || sig > which_cells.size()-1) {
+      UpdateMembraneOnDivision(sig);
+    }
+  }
+}
 
 void Plotter::Plot() {
   graphics->BeginScene();
