@@ -68,8 +68,8 @@ def main():
 
     width_flag= True
     CD= 10 #px
-    T = 183 #MCS
-    T_burnin=100 #MCS
+    T = 154 #MCS
+    T_burnin=200 #MCS
     if width_flag:
         # Plotting the width for each replica
         # Calculate width

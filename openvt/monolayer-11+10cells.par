@@ -5,7 +5,7 @@ lambda = 2
 # to be removed?
 lambda2 = 0                 
 
-Jtable = J20-11+10cells.dat
+Jtable = J20_10-11+10cells.dat
 
 # to be removed?
 conn_diss = 0               
@@ -22,10 +22,10 @@ sizex = 250
 sizey = 7
 
 # For the burn in phase
-relaxation = 100            
+relaxation = 200            
 
-# relaxation + 10xT (with T = 183 MCS)
-mcs = 1930                   
+# relaxation + 10xT (with T = 154 MCS)
+mcs = 1740                   
 rseed = -1
 n_init_cells = 21
 

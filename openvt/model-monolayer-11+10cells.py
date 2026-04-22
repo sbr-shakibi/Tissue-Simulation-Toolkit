@@ -67,8 +67,8 @@ def main():
     tracks.to_csv(output_path+ "/" + "tracks.csv",float_format='%.7E')
 
     CD= 10 #px
-    T = 183 #MCS
-    T_burnin=100 #MCS
+    T = 154 #MCS
+    T_burnin=200 #MCS
     total_width_flag= True
     if total_width_flag:
         # Plotting the total width for each replica
