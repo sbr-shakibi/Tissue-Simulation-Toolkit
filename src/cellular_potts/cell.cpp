@@ -99,15 +99,7 @@ void Cell::CellBirth(Cell &mother_cell) {
 
   if (par.cell_division_area_mean >= 0) {
     division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
-    // Ensure positive division area
-    while (division_area < 0) {
-        division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
-    }
     mother_cell.division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
-    // Ensure positive division area
-    while (mother_cell.division_area < 0) {
-        mother_cell.division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
-    }
   }
 }
 
@@ -157,10 +149,6 @@ void Cell::ConstructorBody(int settau) {
 
   if (par.cell_division_area_mean >= 0) {
     division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
-    // Ensure positive division area
-    while (division_area < 0) {
-      division_area = generateGaussianNoise(par.cell_division_area_mean, par.cell_division_area_std)*par.target_area;
-    }
   }
 
   //  growth_threshold=par.dthres;
