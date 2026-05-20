@@ -183,7 +183,7 @@ void CellularPotts::GrowCells(int cell_type,double growth_rate,double size_thres
   vector<Cell>::iterator c = cell->begin();
   ++c;
   auto CellContactData =  CellPerimeterContact();
-  /*
+  
   // Writing cell properties
   int N_cells_to_report = 1000;
   bool write_to_file = false;
