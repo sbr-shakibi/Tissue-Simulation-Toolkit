@@ -183,22 +183,22 @@ void CellularPotts::GrowCells(int cell_type,double growth_rate,double size_thres
   vector<Cell>::iterator c = cell->begin();
   ++c;
   auto CellContactData =  CellPerimeterContact();
-
+  /*
   // Writing cell properties
   int N_cells_to_report = 1000;
   bool write_to_file = false;
   std::ofstream file_write;
   std::string filename = par.datadir + "/cell_data_no_inhibition_" + std::to_string(thetime) + ".csv";
-  if ((cell->size()>=N_cells_to_report && cell->size()<N_cells_to_report+50)){
+  //if ((cell->size()>=N_cells_to_report && cell->size()<N_cells_to_report+50)){
     // Excluding cells that have zero area.
     int cell_count=0;
     for (; c != cell->end(); c++){
 	if (c->Area() >0){
 		cell_count++;
 	}
-    }
-    //if (cell_count > N_cells_to_report && (thetime % 46 == 0)){
-    if (cell_count > N_cells_to_report){
+  //  }
+    if (cell_count >= N_cells_to_report || (thetime % 39 == 0)){
+    //if (cell_count > N_cells_to_report){
 	// Checking if the file already exists (this helps to avoid double writing)
         std::ifstream file_read(filename);
 	if (!file_read.good()){
