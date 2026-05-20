@@ -1265,8 +1265,8 @@ int CellularPotts::AmoebaeMove(PDE *PDEfield, bool anneal) {
         yp = yp - sizey + 2;
     }
 
-    // Avoid copying borders to cells or background and same cell to the same cell
-    if (sigma[xp][yp]== -1 || sigma[x][y]== -1 || sigma[x][y]== sigma[xp][yp]){
+    // Avoid copying borders to cells or background and same cell to the same cell and to cell with single lattice.
+    if (sigma[xp][yp]== -1 || sigma[x][y]== -1 || sigma[x][y]== sigma[xp][yp] || (*cell)[sigma[x][y]].Area()==1){
       continue;
     }
 
