@@ -112,7 +112,7 @@ TIMESTEP {
     }
 
     dish->CPM->DivideCellsByTargetArea();
-    dish->CPM->GrowCells(0, par.area_growth_rate,par.CIP_area_ratio * par.target_area,par.CIP_neighbour_ratio);
+    dish->CPM->GrowCells(0, par.area_growth_rate,par.CIP_area_ratio,par.CIP_neighbour_ratio);
 
     if (par.graphics && !(i % par.storage_stride)) {
       PROFILE(all_plots, plotter->Plot();)
@@ -230,7 +230,7 @@ void CellularPotts::GrowCells(int cell_type,double growth_rate,double size_thres
     }
 
     // check if size is larger than the threshold
-    if (c->Area() >= size_threshold) {
+    if (area_fraction >= size_threshold) {
       Area_Threshold_Exceeded = true;
     }
     if (surface_fraction >= neighbour_threshold) {
