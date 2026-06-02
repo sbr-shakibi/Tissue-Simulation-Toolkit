@@ -165,6 +165,8 @@ public:
       v[1]=alpha.second;
   }
 
+ inline std::array<double, 2> GetMovementAngle() const {return {v[0], v[1]};}
+
   /*! \brief Returns false if Cell has apoptosed (vanished). */
   inline bool AliveP(void) const { return alive; }
 
