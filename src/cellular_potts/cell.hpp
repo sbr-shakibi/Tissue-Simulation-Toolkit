@@ -380,11 +380,7 @@ public:
   }
 
   //! Track the cell's current center of mass
-  void TrackPosition(void) {
-      double cx,cy;
-      GetCentroid(&cx, &cy);
-      mov_tracker->add_position(cx,cy);
-  }
+  void TrackPosition(void);
 
   //! Update cell vector
 

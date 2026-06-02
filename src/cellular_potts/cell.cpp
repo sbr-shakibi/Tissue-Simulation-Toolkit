@@ -240,3 +240,9 @@ void Cell::GetCentroid(double *cx, double *cy) {
       *cy = sum_y / area;
     }
 }
+
+  void Cell::TrackPosition(void) {
+      double cx,cy;
+      Cell::GetCentroid(&cx, &cy);
+      mov_tracker->add_position(cx,cy);
+  }
