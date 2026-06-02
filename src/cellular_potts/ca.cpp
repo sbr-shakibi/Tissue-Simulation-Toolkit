@@ -3421,35 +3421,58 @@ int **CellularPotts::get_annealed_sigma(int steps) {
 }
 
 void CellularPotts::CalcPeriodicSafeCentroids(void) {
-
-    Cell::sizex=sizex;
-    Cell::sizey=sizey;
-
-    const double two_pi = 2.0 * M_PI;
-    for (Cell &c : *cell) {
-        c.sum_sin_x=0.;
-        c.sum_cos_x=0.;
-        c.sum_sin_y=0.;
-        c.sum_cos_y=0.;
-    }
-
-    for (int x=1;x<=sizex-2;x++) {
-        for (int y=1;y<=sizey-2;y++) {
-            if (sigma[x][y]>0) {
-
-                        double theta_x = two_pi * static_cast<double>(x) / (sizex-2);
-                        double theta_y = two_pi * static_cast<double>(y) / (sizey-2);
-                        (*cell)[sigma[x][y]].sum_cos_x += std::cos(theta_x);
-                        (*cell)[sigma[x][y]].sum_sin_x += std::sin(theta_x);
-                        (*cell)[sigma[x][y]].sum_cos_y += std::cos(theta_y);
-                        (*cell)[sigma[x][y]].sum_sin_y += std::sin(theta_y);
-                    }
-
-                    //double avg_theta = std::atan2(sum_sin, sum_cos);
-                    //if (avg_theta < 0) avg_theta += two_pi;  // normalize to [0, 2π)
-
-                    //return domain_size * avg_theta / two_pi;
-                }
-            }
+  // Construct an array of the first pixel of each cell, to be used as a starting point for the algorithm to find the centroids with periodic boundaries.
+  vector<array<int,2>> cell_first_pixel(cell->size(),{-1,-1});
+  // full scan of the lattice 
+  for (int x = 1; x <= sizex - 2; x++){
+    for (int y = 1; y <= sizey - 2; y++) {
+      if (sigma[x][y] > 0) {
+        int s = sigma[x][y];
+        // if the first pixel of this cell has not been found yet, set it to the current pixel
+        if (cell_first_pixel[s - 1][0] == -1) {
+          cell_first_pixel[s - 1] = {x, y};
+          (*cell)[s].sum_x_torus = x;
+          (*cell)[s].sum_y_torus = y;
+        } else {
+          // if the first pixel of this cell has already been found, add the current pixel to the sum of x and y coordinates of the cell, taking into account periodic boundaries
+          int dx = x - cell_first_pixel[s - 1][0];
+          int dy = y - cell_first_pixel[s - 1][1];
+	  (*cell)[s].sum_x_torus += x;
+          (*cell)[s].sum_y_torus += y;
+          if (dx > sizex / 2) {
+            (*cell)[s].sum_x_torus -= sizex - 2;
+          } else if (dx < -sizex / 2) {
+            (*cell)[s].sum_x_torus += sizex - 2;
+          }
+          if (dy > sizey / 2) {
+            (*cell)[s].sum_y_torus -= sizey - 2;
+          } else if (dy < -sizey / 2) {
+            (*cell)[s].sum_y_torus += sizey - 2;
+          }
         }
+      }
+    }
+  }
+
+  
+  // Adjust the sum_x_torus and sum_y_torus of each cell to make sure the centroid is inside the domain.
+  for (vector<Cell>::iterator c = cell->begin(); c != cell->end(); c++){
+    if (c->Sigma() > 0) {
+      int area = c->Area();
+      double cx = (double)c->sum_x_torus / (double)area;
+      double cy = (double)c->sum_y_torus / (double)area;
+      if (cx < 0.5) {
+        c->sum_x_torus += (sizex - 2) * area;
+      } else if (cx >= sizex - 1.5) {
+        c->sum_x_torus -= (sizex - 2) * area;
+      }
+      if (cy < 0.5) {
+        c->sum_y_torus += (sizey - 2) * area;
+      } else if (cy >= sizey - 1.5) { 
+        c->sum_y_torus -= (sizey - 2) * area;
+      }
+    }
+  }
+}
+
 

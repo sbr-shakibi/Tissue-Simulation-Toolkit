@@ -141,10 +141,8 @@ void Cell::ConstructorBody(int settau) {
   sum_yy = 0;
   sum_xy = 0;
   border = 0;
-  sum_sin_x = 0.;
-  sum_cos_x = 0.;
-  sum_sin_y = 0.;
-  sum_cos_y = 0.;
+  sum_x_torus = 0;
+  sum_y_torus = 0;
   std::vector<std::array<int, 2>> membrane_pixels = std::vector<std::array<int, 2>>();
 
   if (par.cell_division_area_mean >= 0) {
@@ -230,20 +228,15 @@ void Cell::ClearJ(void) {
   }
 }
 
-int Cell::sizex=0.;
-int Cell::sizey=0.;
+int Cell::sizex=par.sizex;
+int Cell::sizey=par.sizey;
 
 void Cell::GetCentroid(double *cx, double *cy) {
-    const double two_pi = 2.0 * M_PI;
     if (par.periodic_boundaries) {
-        double avg_theta_x = std::atan2(sum_sin_x, sum_cos_x);
-        if (avg_theta_x < 0) avg_theta_x += two_pi;  // normalize to [0, 2π)
-        *cx = (sizex-2) * avg_theta_x / two_pi;
-        double avg_theta_y = std::atan2(sum_sin_y, sum_cos_y);
-        if (avg_theta_y < 0) avg_theta_y += two_pi;  // normalize to [0, 2π)
-        *cy = (sizey-2) * avg_theta_y / two_pi;
+      *cx = (double)sum_x_torus / (double)area;
+      *cy = (double)sum_y_torus / (double)area;
     } else { // fast method
-        *cx = sum_x / area;
-        *cy = sum_y / area;
+      *cx = sum_x / area;
+      *cy = sum_y / area;
     }
 }
