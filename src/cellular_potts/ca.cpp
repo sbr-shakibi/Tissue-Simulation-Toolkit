@@ -41,6 +41,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 #include "random.hpp"
 #include "sqr.hpp"
 #include "sticky.hpp"
+#include <stdexcept>
 
 #define ZYGFILE(Z) <Z.xpm>
 #define XPM(Z) Z##_xpm
@@ -729,51 +730,112 @@ int CellularPotts::DeltaH(int x, int y, int xp, int yp, PDE *PDEfield,
 }
 
 double CellularPotts::VectorMoveDeltaH(int x, int y, int xp, int yp) {
-    
-    double vec_move[2] = {0.,0.};
-    vec_move[0]=(double)x-(double)xp;
-    vec_move[1]=(double)y-(double)yp;
+  int sxy=sigma[x][y]; // target
+  int sxyp=sigma[xp][yp]; // source
+  double cv[2]={0.,0.};
+	
+  std::string persistence_force_mode = par.persistence_force_mode;
 
-    // average
-    int sxy=sigma[x][y];
-    int sxyp=sigma[xp][yp];
-    
-    //cerr << "cells: " << sxy << ", " << sxyp << endl;
-    double cv[2]={0.,0.};
-    // extension-retraction
-   /* if (sxy && sxyp) {
-        cv[0]=((*cell)[sxy].v[0]+(*cell)[sxyp].v[0])/2.;
-        cv[1]=((*cell)[sxy].v[1]+(*cell)[sxyp].v[1])/2.;
+  if (persistence_force_mode == "extension"){
+    if (sxyp > 0) {
+      cv[0]=(*cell)[sxyp].v[0];
+      cv[1]=(*cell)[sxyp].v[1];
     } else {
-        if (sxy) {
-            cv[0]=(*cell)[sxy].v[0];
-            cv[1]=(*cell)[sxy].v[1];
-        } else {
-            if (sxyp) {
-                cv[0]=(*cell)[sxyp].v[0];
-                cv[1]=(*cell)[sxyp].v[1];
-            } else {
-                return 0.;
-            }
-        }
-    }*/
-    
-    // extension only
-    if (sxyp) {
+      if (sxy > 0) {
+        return 0.;
+      }
+    }
+  } else if (persistence_force_mode =="retraction"){
+    if (sxy > 0) {
+      cv[0]=(*cell)[sxy].v[0];
+      cv[1]=(*cell)[sxy].v[1];
+    } else {
+      if (sxyp > 0) {
+        return 0.;
+      }
+    }
+  } else if (persistence_force_mode == "reciprocal"){
+    if (sxy>0 && sxyp > 0) {
+      cv[0]=((*cell)[sxy].v[0]+(*cell)[sxyp].v[0])/2.;
+      cv[1]=((*cell)[sxy].v[1]+(*cell)[sxyp].v[1])/2.;
+    } else if (sxy > 0) { //retraction
+        cv[0]=(*cell)[sxy].v[0];
+        cv[1]=(*cell)[sxy].v[1];
+    } else if (sxyp > 0) { // extension
         cv[0]=(*cell)[sxyp].v[0];
         cv[1]=(*cell)[sxyp].v[1];
-    } else {
-        if (sxy) {
-            return 0.;
-        }
     }
-    
-    
-    //cerr << "cv = " << cv[0] << ", "  << cv[1] << endl;
-    double dotproduct = cv[0] * vec_move[0] + cv[1] * vec_move[1];
-    
-    return par.lambda_move * dotproduct;
-    
+  } else {
+    throw std::runtime_error("Invalid persistence_force_mode: " + persistence_force_mode);
+  }
+
+  double vec_move[2] = {0.,0.};
+  std::string persistence_update_direction = par.persistence_update_direction;
+
+  if (persistence_update_direction == "source-to-target-unnorm"){
+    	vec_move[0]=(double)x-(double)xp;
+    	vec_move[1]=(double)y-(double)yp;
+  } else if (persistence_update_direction == "source-to-target-norm"){
+
+    vec_move[0]=(double)x-(double)xp;
+    vec_move[1]=(double)y-(double)yp;
+  	double norm = std::sqrt(vec_move[0] * vec_move[0] + vec_move[1] * vec_move[1]);
+    vec_move[0] /= norm;
+    vec_move[1] /= norm;
+
+  } else if (persistence_update_direction == "cell-mass-displacement"){
+    // Extension move (also applied in cell-to-cell copy attempts)
+    if (sxyp > 0){
+      double cx, cy, area;
+      double x_torus = (double)x, y_torus = (double)y;
+      (*cell)[sxyp].GetCentroid(&cx,&cy);
+      area = (double)(*cell)[sxyp].Area();
+      double dx = cx - x_torus;
+      double dy = cy - y_torus;
+      // Account for toroidal geometry
+      if (par.periodic_boundaries) {
+        if (dx > sizex / 2.0) {
+            x_torus += (double)(sizex - 2);
+        } else if (dx < -sizex / 2.0) {
+            x_torus -= (double)(sizex - 2);
+        }
+        if (dy > sizey / 2.0) {
+            y_torus += (double)(sizey - 2);
+        } else if (dy < -sizey / 2.0) {
+            y_torus -= (double)(sizey - 2);
+        }
+      }
+      vec_move[0] = area *((cx * area + x_torus)/(area+1) - cx);
+      vec_move[1] = area *((cy * area + y_torus)/(area+1) - cy);
+
+    } else if (sxy > 0) { // Retraction move
+      double cxp, cyp, area;
+      double xp_torus = (double)xp, yp_torus = (double)yp;
+      (*cell)[sxy].GetCentroid(&cxp,&cyp);
+      area = (double)(*cell)[sxy].Area();
+      double dxp = cxp - xp_torus;
+      double dyp = cyp - yp_torus;
+      // Account for toroidal geometry
+      if (par.periodic_boundaries) {
+        if (dxp > sizex / 2.0) {
+            xp_torus += (double)(sizex - 2);
+        } else if (dxp < -sizex / 2.0) {
+            xp_torus -= (double)(sizex - 2);
+        }
+        if (dyp > sizey / 2.0) {
+            yp_torus += (double)(sizey - 2);
+        } else if (dyp < -sizey / 2.0) {
+            yp_torus -= (double)(sizey - 2);
+        }
+      }
+      vec_move[0] = area *((cxp * area - xp_torus)/(area-1) - cxp);
+      vec_move[1] = area *((cyp * area - yp_torus)/(area-1) - cyp);
+    }
+  }
+
+  double dotproduct = cv[0] * vec_move[0] + cv[1] * vec_move[1];
+
+  return par.lambda_move * dotproduct;
 }
 
 int CellularPotts::Act_AmoebaeMove(PDE *PDEfield) {
