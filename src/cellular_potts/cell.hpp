@@ -386,6 +386,8 @@ public:
 
   //! Update cell vector
 
+  //! Get the cell's current center of mass
+  void GetCentroid(double *cx, double *cy);
 private:
   /*! \brief Read a table of static Js.
     First line: number of types (including medium)
@@ -645,10 +647,6 @@ private:
   // returns the maximum cell type index
   // (depends on Jtable)
   static int MaxTau(void) { return maxtau; }
-
-  //! Get the cell's current center of mass
- void GetCentroid(double *cx, double *cy);
-
 
 protected:
   int colour;
