@@ -2252,6 +2252,10 @@ std::vector<PixelPos> CellularPotts::GetCellMembranePixels() {
 }
 
 void CellularPotts::MeasureCellPerimeters() {
+  // initializing cell perimeters from zero to avoid problems with reusing this function
+  for (vector<Cell>::iterator c = cell->begin(); c != cell->end(); c++) {
+    c->SetPerimeter(0);
+  }
   for (int x = 1; x < sizex - 1; x++) {
     for (int y = 1; y < sizey - 1; y++) {
       if (sigma[x][y] > 0) {
