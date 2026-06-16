@@ -222,13 +222,6 @@ void CellularPotts::GrowCells(int cell_type,double growth_rate,double size_thres
     area_fraction = c->Area()/c->TargetArea();
     surface_fraction = static_cast<double>(CellContactData[cell_id][2])/static_cast<double>(CellContactData[cell_id][1]);
     
-    if (area_fraction>1){
-	    area_fraction = 1.0;
-    }
-    if (surface_fraction>1){
-            surface_fraction = 1.0;
-    }
-
     // check if size is larger than the threshold
     if (area_fraction >= size_threshold) {
       Area_Threshold_Exceeded = true;
