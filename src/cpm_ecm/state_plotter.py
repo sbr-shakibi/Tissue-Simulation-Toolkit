@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 from typing import List, Optional
 
-import matplotlib import colormaps
+from matplotlib import colormaps
 from matplotlib.contour import QuadContourSet
 from matplotlib.image import AxesImage
 from matplotlib.lines import Line2D
