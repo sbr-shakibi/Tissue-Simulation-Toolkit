@@ -807,34 +807,34 @@ double CellularPotts::VectorMoveDeltaH(int x, int y, int xp, int yp) {
       }
       vec_move[0] = area *((cx * area + x_torus)/(area+1) - cx);
       vec_move[1] = area *((cy * area + y_torus)/(area+1) - cy);
-
+    
     } else if (sxy > 0) { // Retraction move
-      double cxp, cyp, area;
-      double xp_torus = (double)xp, yp_torus = (double)yp;
-      (*cell)[sxy].GetCentroid(&cxp,&cyp);
+      double cx, cy, area;
+      double x_torus = (double)x, y_torus = (double)y;
+      (*cell)[sxy].GetCentroid(&cx,&cy);
       area = (double)(*cell)[sxy].Area();
-      double dxp = cxp - xp_torus;
-      double dyp = cyp - yp_torus;
+      double dx = cx - x_torus;
+      double dy = cy - y_torus;
       // Account for toroidal geometry
       if (par.periodic_boundaries) {
-        if (dxp > sizex / 2.0) {
-            xp_torus += (double)(sizex - 2);
-        } else if (dxp < -sizex / 2.0) {
-            xp_torus -= (double)(sizex - 2);
+        if (dx > sizex / 2.0) {
+            x_torus += (double)(sizex - 2);
+        } else if (dx < -sizex / 2.0) {
+            x_torus -= (double)(sizex - 2);
         }
-        if (dyp > sizey / 2.0) {
-            yp_torus += (double)(sizey - 2);
-        } else if (dyp < -sizey / 2.0) {
-            yp_torus -= (double)(sizey - 2);
+        if (dy > sizey / 2.0) {
+            y_torus += (double)(sizey - 2);
+        } else if (dy < -sizey / 2.0) {
+            y_torus -= (double)(sizey - 2);
         }
       }
-      vec_move[0] = area *((cxp * area - xp_torus)/(area-1) - cxp);
-      vec_move[1] = area *((cyp * area - yp_torus)/(area-1) - cyp);
+      vec_move[0] = area *((cx * area - x_torus)/(area-1) - cx);
+      vec_move[1] = area *((cy * area - y_torus)/(area-1) - cy);
     }
   }
 
   double dotproduct = cv[0] * vec_move[0] + cv[1] * vec_move[1];
-
+ 
   return par.lambda_move * dotproduct;
 }
 
