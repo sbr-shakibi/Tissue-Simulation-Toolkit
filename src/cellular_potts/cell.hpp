@@ -418,6 +418,8 @@ private:
     sum_xy += x * y;
 
     if (par.periodic_boundaries) {
+      int sizex = par.sizex;
+      int sizey = par.sizey;
       // calculating the centroids before the adding the moments
       double com_x = (double)sum_x_torus / (double)(area-1); // area-1 = old cell area.
       double com_y = (double)sum_y_torus / (double)(area-1);
@@ -479,6 +481,8 @@ private:
     sum_xy -= x * y;
 
     if (par.periodic_boundaries) {
+      int sizex = par.sizex;
+      int sizey = par.sizey;
       double com_x = (double)sum_x_torus / (double)(area+1);
       double com_y = (double)sum_y_torus / (double)(area+1);
       sum_x_torus -= x;
