@@ -150,6 +150,7 @@ TIMESTEP {
     if (i == 0) {
       dish = new Dish();
       dish->CPM->MeasureCellPerimeters();
+      dish->CPM->CalcPeriodicSafeCentroids();
     }
 
     static Info *info = new Info(*dish, *this);
@@ -176,10 +177,62 @@ TIMESTEP {
     }
 
     if (!info->IsPaused()) {
-      dish->CPM->CalcPeriodicSafeCentroids();
+
+      {
+
+
+          if (!(i%sim.output_per)) { // open file if necessary and write data
+              if (cellpos_stream == nullptr) {
+                  std::cout << "Opening cell position" << std::endl;
+
+                  // Construct the output file path
+                  std::filesystem::path dir = par.datadir + "/" + sim.output_name;
+                  std::filesystem::create_directories(dir); // Recursively create the directory if it doesn't exist
+
+                  std::filesystem::path cpfname = std::filesystem::path(dir) / "tst_before_unwrapping.csv";
+
+                  bool file_exists = std::filesystem::exists(cpfname);
+
+                  // Open file in append mode
+                  cellpos_stream = new std::ofstream(cpfname, std::ios::app);
+                  if (!(*cellpos_stream)) {
+                      std::cerr << "Failed to open file: " << cpfname << std::endl;
+                      exit(1);
+                  }
+
+                  // Ensure the stream uses a locale that supports UTF-8 (optional, can omit if unnecessary)
+                  cellpos_stream->imbue(std::locale(std::locale(), new std::numpunct<char>));
+
+                  // Set fixed-point notation and a specific precision
+                  *cellpos_stream << std::scientific << std::setprecision(6);  // Adjust precision as needed
+
+                  // Write the CSV header
+                  if (!file_exists) {
+                      *cellpos_stream << "time,id,com_1,com_2,area,surface" << std::endl;
+                  }
+              }
+
+              // Retrieve data from cell with ID 1
+
+              double cx, cy;
+              dish->CPM->getCell(1).GetCentroid(&cx,&cy);
+              double carea = dish->getCell(1).Area();
+              double cperimeter = dish->getCell(1).Perimeter();
+
+              // Write the data row
+              *cellpos_stream << i << ","    // Simulation time or timestep
+              << id << ","    // Cell ID
+              << cx << ","
+              << cy << ","
+              << carea << ","
+              << cperimeter
+              << std::endl;
+              cellpos_stream->flush(); // after each time step, if needed
+          }
+      }
+
       PROFILE(amoebamove, dish->CPM->AmoebaeMove(dish->PDEfield);)
-	      dish->CPM->CalcPeriodicSafeCentroids();
-	      dish->getCell(1).TrackPosition();
+      dish->getCell(1).TrackPosition();
 
       if (par.persistence_noise > 0) {
 	auto cv = dish->CPM->getCell(1).GetMovementAngle();
@@ -221,61 +274,6 @@ TIMESTEP {
         Write(fstr.data());    // Now safe to call Write(char*)
     }
 
-      {
-          
-          
-          if (!(i%sim.output_per)) { // open file if necessary and write data
-              if (cellpos_stream == nullptr) {
-                  std::cout << "Opening cell position" << std::endl;
-                  
-                  // Construct the output file path
-                  std::filesystem::path dir = par.datadir + "/" + sim.output_name;
-                  std::filesystem::create_directories(dir); // Recursively create the directory if it doesn't exist
-                  
-                  std::filesystem::path cpfname = std::filesystem::path(dir) / "tst_before_unwrapping.csv";
-                  
-                  bool file_exists = std::filesystem::exists(cpfname);
-                  
-                  // Open file in append mode
-                  cellpos_stream = new std::ofstream(cpfname, std::ios::app);
-                  if (!(*cellpos_stream)) {
-                      std::cerr << "Failed to open file: " << cpfname << std::endl;
-                      exit(1);
-                  }
-                  
-                  // Ensure the stream uses a locale that supports UTF-8 (optional, can omit if unnecessary)
-                  cellpos_stream->imbue(std::locale(std::locale(), new std::numpunct<char>));
-                  
-                  // Set fixed-point notation and a specific precision
-                  *cellpos_stream << std::scientific << std::setprecision(6);  // Adjust precision as needed
-                  
-                  // Write the CSV header
-                  if (!file_exists) {
-                      *cellpos_stream << "time,id,com_1,com_2,area,surface" << std::endl;
-                  }
-              }
-              
-              // Retrieve data from cell with ID 1
-
-              double cx, cy;
-	      dish->CPM->getCell(1).GetCentroid(&cx,&cy);
-	      //cout << "cx,cy: " << cx << " , " << cy << "\n";
-	      //double cx = dish->getCell(1).getCenterX();
-              //double cy = dish->getCell(1).getCenterY();
-              double carea = dish->getCell(1).Area();
-              double cperimeter = dish->getCell(1).Perimeter();
-              
-              // Write the data row
-              *cellpos_stream << i << ","    // Simulation time or timestep
-              << id << ","    // Cell ID 
-              << cx << ","
-              << cy << ","
-              << carea << ","
-              << cperimeter
-              << std::endl;
-              cellpos_stream->flush(); // after each time step, if needed
-          }
-      }
     if (!info->IsPaused()) {
       i++;
     }
