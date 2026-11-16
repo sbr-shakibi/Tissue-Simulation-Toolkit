@@ -248,9 +248,6 @@ TIMESTEP {
       i++;
     }
 
-    if (!info->IsPaused()) {
-      PROFILE(amoebamove, dish->CPM->AmoebaeMove(dish->PDEfield);)
-    }
     // cout << "Compactness = " << dish-> CPM -> Compactness() << endl;
 
    /* if (i == par.mcs) {
@@ -333,6 +330,11 @@ TIMESTEP {
               cellpos_stream->flush(); // after each time step, if needed
           }
       }
+
+    if (!info->IsPaused()) {
+      PROFILE(amoebamove, dish->CPM->AmoebaeMove(dish->PDEfield);)
+    }
+
     if (!info->IsPaused()) {
       i++;
     }

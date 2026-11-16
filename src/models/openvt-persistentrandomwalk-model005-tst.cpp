@@ -252,9 +252,6 @@ TIMESTEP {
       i++;
     }
 
-    if (!info->IsPaused()) {
-      PROFILE(amoebamove, dish->CPM->AmoebaeMove(dish->PDEfield);)
-        
         dish->CPM->CalcPeriodicSafeCentroids();
         dish->getCell(1).TrackPosition();
         MovementTracker::Coordinate displacement = dish->getCell(1).MovementVector();
@@ -263,8 +260,6 @@ TIMESTEP {
             MovementTracker::Coordinate new_alpha(displacement.first/displacement_magnitude,displacement.second/displacement_magnitude);
             dish->getCell(1).SetMovementAngle(new_alpha);
         }
-        
-    }
     // cout << "Compactness = " << dish-> CPM -> Compactness() << endl;
 
     /*if (i == par.mcs) {
@@ -347,6 +342,12 @@ TIMESTEP {
               cellpos_stream->flush(); // after each time step, if needed
           }
       }
+
+
+    if (!info->IsPaused()) {
+      PROFILE(amoebamove, dish->CPM->AmoebaeMove(dish->PDEfield);)
+    }
+
     if (!info->IsPaused()) {
       i++;
     }
