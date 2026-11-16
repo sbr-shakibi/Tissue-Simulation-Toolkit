@@ -406,11 +406,12 @@ int main(int argc, char *argv[]) {
                 std::cout << "mcs = " <<  par.mcs << std::endl;
                 par.sizex = model.len_1;
                 par.sizey = model.len_2;
-            par.lambda_move = model.model_args["lambda_dir"].get<double>();
-            
-           // cerr << "par.lambda_move: " << par.lambda_move << endl;
-            //std::string mode = model.model_args["cpm_force_mode"];
-            
+                par.lambda_move = model.model_args["lambda_dir"].get<double>();
+                std::cout << "lambda_dir: " << par.lambda_move << std::endl;
+                par.persistence_force_mode = model.model_args["cpm_force_mode"].get<std::string>();
+                std::cout << "cpm_force_mode: " << par.persistence_force_mode << std::endl;
+                par.persistence_update_direction = model.model_args["cpm_update_direction"].get<std::string>();
+                std::cout << "cpm_update_direction: " << par.persistence_update_direction << std::endl;
                 
                 Seed(par.rseed);
                 

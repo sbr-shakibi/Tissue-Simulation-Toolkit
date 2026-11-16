@@ -422,6 +422,10 @@ int main(int argc, char *argv[]) {
                 par.sizey = model.len_2;
             par.lambda_move = model.model_args["lambda_dir"].get<double>();
             par.cell_move_dt = model.model_args["dt"].get<int>();
+	    par.persistence_force_mode = model.model_args["cpm_force_mode"].get<std::string>();
+                std::cout << "cpm_force_mode: " << par.persistence_force_mode << std::endl;
+                par.persistence_update_direction = model.model_args["cpm_update_direction"].get<std::string>();
+                std::cout << "cpm_update_direction: " << par.persistence_update_direction << std::endl;
             
             
            // cerr << "par.lambda_move: " << par.lambda_move << endl;
