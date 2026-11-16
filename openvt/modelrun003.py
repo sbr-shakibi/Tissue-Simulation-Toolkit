@@ -7,7 +7,7 @@ stdout=subprocess.PIPE
 def main():
     # Path to the JSON config and executable (assumed to be in the same directory)
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    json_path = os.path.join(base_dir, "input.json")
+    json_path = os.path.join(base_dir, "input-model003.json")
     executable_path = os.path.join(base_dir, "../bin/openvt-persistentrandomwalk-model003-tst")
 
     # Read JSON file
